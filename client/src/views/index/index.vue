@@ -6,6 +6,9 @@
               <mu-icon value="menu"></mu-icon>
           </mu-button>
           Chat
+          <mu-button icon slot="right" to="/addFriends">
+            <i class="iconfont icon-tianjia"></i>
+          </mu-button>
         </mu-appbar>
         <!-- 左侧菜单 -->
         <mu-container>

@@ -35,6 +35,16 @@ export default new Router({
       title: "首页",
       component: resolve => require(['@/views/index/index.vue'], resolve)
     }, {
+      path: '/addFriends',
+      name: 'addFriends',
+      title: "添加好友",
+      component: resolve => require(['@/views/addFriends/addFriends.vue'], resolve)
+    }, {
+      path: '/friendsInfo',
+      name: 'friendsInfo',
+      title: "好友信息",
+      component: resolve => require(['@/views/friendsInfo/friendsInfo.vue'], resolve)
+    }, {
       path: '/chat',
       name: 'chat',
       title: "聊天",

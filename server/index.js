@@ -60,10 +60,6 @@ const CONFIG = {
     renew: false,  //(boolean) renew session when session is nearly expired,
 };
 app.use(session(CONFIG, app));
-app.use((ctx, next) => {
-    console.log(ctx)
-    next();
-})
 // 跨域
 app.use(cors({
     origin: 'http://192.168.1.55:8080',
@@ -92,7 +88,7 @@ app.use(function (ctx, next) {
 });
 
 app.use(jwtKoa({ secret: 'conchat' }).unless({
-    path: [/\/login/, /\/register/, /\/getImgCode/, /\/getSmsCode/, /\/retrievePwd/] //数组中的路径不需要通过jwt验证
+    path: [/\/login/, /\/register/, /\/getImgCode/, /\/getSmsCode/, /\/retrievePwd/, /\/getFriends/] //数组中的路径不需要通过jwt验证
 }))
 
 

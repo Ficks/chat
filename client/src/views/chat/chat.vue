@@ -14,8 +14,7 @@
 
 
           <div :class="{my:userInfo.tel==item.tel}" class="list" v-for="(item,index) in chatList">
-            <div class="headImg" v-if="userInfo.tel==item.tel"><img src="@/assets/headImg.jpg" alt=""></div>
-            <div class="headImg" v-else><img src="@/assets/logo.jpg" alt=""></div>
+            <div class="headImg"><img src="@/assets/headImg.jpg" alt=""></div>
             <div class="mbox">
               <!-- <h3>Ficks</h3> -->
               <div class="text">{{item.msg}}</div>

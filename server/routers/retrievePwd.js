@@ -1,7 +1,7 @@
 var router = require('koa-router')();
 const mysql = require('../mysql');
 
-// 注册
+// 找回密码
 router.post('/retrievePwd', async ctx => {
     const { body } = ctx.request;
 
