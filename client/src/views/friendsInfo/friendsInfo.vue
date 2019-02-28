@@ -21,22 +21,42 @@
             </mu-card>
             
             <div class="btns">
-              <mu-button full-width  large color="primary">添加到通讯录</mu-button>
-              <!-- <mu-button full-width large  color="primary">发送消息</mu-button>
-              <mu-button full-width large  color="error">删除好友</mu-button> -->
+              <mu-button v-if="!userInfo.isFriends" @click="addFriends" full-width large color="primary">添加到通讯录</mu-button>
+              <template v-else>
+                <mu-button full-width large  color="primary">发送消息</mu-button>
+                <mu-button full-width large  color="error">删除好友</mu-button>
+              </template>
             </div>
         </mu-container>
     </div>
 </template>
 
 <script>
+import friendsApi from "@/api/friends";
 export default {
   data() {
-    return { value13: "" };
+    return {
+      tel: "",
+      userInfo: {}
+    };
+  },
+  created() {
+    this.tel = this.$route.query.tel;
+    this.onSearch();
   },
   methods: {
     //   查询用户账号tel
-    onSearch() {}
+    onSearch() {
+      friendsApi.getFriends({ tel: this.tel }).then(data => {
+        this.userInfo = data;
+      });
+    },
+    // 添加好友
+    addFriends() {
+      friendsApi.addFriends(this.userInfo.data).then(data => {
+        console.log(data);
+      });
+    }
   }
 };
 </script>

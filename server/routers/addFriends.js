@@ -10,13 +10,12 @@ const mysql = require('../mysql');
 // 3、查询好友表判断是否已经是好友
 // 4、返回信息
 
-
 router.get('/getFriends', async ctx => {
-    const { body } = ctx.request;
+    const { query } = ctx.request;
 
     let d = null;
     // 查询账号是否存在
-    await searchUserId(body.id).then(data => {
+    await searchUserId(query.tel).then(data => {
         if (data.length == 0) {
             ctx.body = {
                 status: -1,
@@ -32,8 +31,9 @@ router.get('/getFriends', async ctx => {
         }
     })
 
+
     // 查询是否好友关系
-    await searchFriends(body.id, ctx.session.userInfo.id).then(data => {
+    await searchFriends(d.id, ctx.session.userInfo.id).then(data => {
         let obj = {
             status: 1,
             data: {
@@ -61,21 +61,12 @@ router.get('/getFriends', async ctx => {
 // 添加好友
 router.post('/addFriends', async ctx => {
     const { body } = ctx.request;
-    let bUser = null;
-    await searchUserId(body.id).then(data => {
-        if (data.length > 0) {
-            bUser = data[0];
-        }
-    }).catch(err => {
-        ctx.body = {
-            status: -1,
-            msg: "添加失败"
-        }
-    })
 
+    console.log(222)
+    console.log(body)
+    console.log(222)
     let aUser = ctx.session.userInfo;
-
-    await mysql.query(`INSERT INTO Friends(aId,bId,aName,bName,status) VALUES(${aUser.id},${bUser.id},${aUser.nickName},${bUser.nickName, 2})`).then(data => {
+    await mysql.query(`INSERT INTO friends(aId,bId,status) VALUES(${aUser.id},${body.id}, 2})`).then(data => {
         ctx.body = {
             status: 1,
             msg: "好友通知发送成功"
@@ -89,9 +80,10 @@ router.post('/addFriends', async ctx => {
 })
 
 // 查询该账号是否存在
-function searchUserId(id) {
+function searchUserId(tel) {
+    console.log(tel);
     return new Promise((reslove, reject) => {
-        mysql.query(`select * from user where id=${id}`).then((data) => {
+        mysql.query(`select * from user where tel=${tel}`).then((data) => {
             reslove(data);
         }).catch(err => {
             reject(err);

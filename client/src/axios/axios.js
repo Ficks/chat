@@ -3,9 +3,15 @@ import Axios from 'axios';
 import config from '@/config/config.js';
 import store from '../store/store.js'; //状态管理
 import Toast from 'muse-ui-toast';
+import router from '../router'
 Toast.config({
   position: 'top'
 })
+
+
+
+// 请求拦截
+
 
 // 封装Axios
 export default params => {
@@ -14,6 +20,7 @@ export default params => {
 
   if (params.type == 'get') params.params = params.data;
 
+
   return new Promise((resolve, reject) => {
     //创建Axios实例，把基本的配置放进去
     const instance = Axios.create({
@@ -21,6 +28,19 @@ export default params => {
       withCredentials: true,
       //定义请求根目录
       baseURL: config.baseUrl,
+    });
+
+    instance.interceptors.request.use(config => {
+      let token = sessionStorage.token;
+      console.log(token);
+      if (token) {
+        config.headers['Authorization'] = 'Bearer ' + token;
+      }
+      return config;
+    }, error => {
+      // Do something with request error
+      console.log(error); // for debug
+      Promise.reject(error);
     });
 
     // params.headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -33,6 +53,10 @@ export default params => {
         resolve(res.data.data, res);
       } else {
         Toast.error(res.data.msg)
+        if (res.data.status == 10000) {
+          router.push('/login');
+          return;
+        }
         reject(res.data);
       }
       console.log(res.data);

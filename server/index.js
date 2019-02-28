@@ -62,7 +62,7 @@ const CONFIG = {
 app.use(session(CONFIG, app));
 // 跨域
 app.use(cors({
-    origin: 'http://192.168.1.55:8080',
+    origin: 'http://192.168.1.221:8080',
     exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
     maxAge: 5,
     credentials: true,
@@ -78,8 +78,8 @@ app.use(function (ctx, next) {
         if (401 == err.status) {
             ctx.status = 200;
             ctx.body = {
-                status: -1,
-                msg: "授权失败"
+                status: 10000,
+                msg: "授权失败,请重新登录"
             };
         } else {
             throw err;
@@ -88,7 +88,7 @@ app.use(function (ctx, next) {
 });
 
 app.use(jwtKoa({ secret: 'conchat' }).unless({
-    path: [/\/login/, /\/register/, /\/getImgCode/, /\/getSmsCode/, /\/retrievePwd/, /\/getFriends/] //数组中的路径不需要通过jwt验证
+    path: [/\/login/, /\/register/, /\/getImgCode/, /\/getSmsCode/, /\/retrievePwd/] //数组中的路径不需要通过jwt验证
 }))
 
 

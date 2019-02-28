@@ -4,7 +4,14 @@ export default {
     getFriends(data) {
         return http({
             url: '/getFriends',
-            type: 'post',
+            type: 'get',
+            tips: true,
+            data
+        })
+    },
+    addFriends(data) {
+        return http({
+            url: '/addFriends',
             tips: true,
             data
         })

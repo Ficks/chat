@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 
 router.post('/login', async ctx => {
     const { body } = ctx.request;
+    console.log(ctx);
     await mysql.query(`select * from user where tel=${body.tel} and pwd=${body.pwd}`).then(data => {
         if (data.length > 0) {
             let userInfo = data[0];

@@ -16,11 +16,18 @@
 <script>
 export default {
   data() {
-    return { tel: "" };
+    return { tel: "15111327689" };
   },
   methods: {
     //   查询用户账号tel
-    onSearch() {}
+    onSearch() {
+      this.$router.push({
+        path: "/friendsInfo",
+        query: {
+          tel: this.tel
+        }
+      });
+    }
   }
 };
 </script>

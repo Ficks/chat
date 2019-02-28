@@ -10,7 +10,7 @@ export default new Router({
       path: '/',
       name: "首页",
       redirect: to => {
-        return '/index'
+        return '/index/message'
       }
     },
 
@@ -33,7 +33,32 @@ export default new Router({
       path: '/index',
       name: 'index',
       title: "首页",
-      component: resolve => require(['@/views/index/index.vue'], resolve)
+      component: resolve => require(['@/views/index/index.vue'], resolve),
+      children: [{
+        path: '/index/message',
+        name: 'message',
+        title: "聊天记录",
+        component: resolve => require(['@/views/index/message.vue'], resolve)
+
+      }, {
+        path: '/index/friends',
+        name: 'friends',
+        title: "通讯录",
+        component: resolve => require(['@/views/index/friends.vue'], resolve)
+
+      }, {
+        path: '/index/find',
+        name: 'find',
+        title: "发现",
+        component: resolve => require(['@/views/index/find.vue'], resolve)
+
+      }, {
+        path: '/index/world',
+        name: 'world',
+        title: "世界",
+        component: resolve => require(['@/views/index/world.vue'], resolve)
+
+      },]
     }, {
       path: '/addFriends',
       name: 'addFriends',
