@@ -11,6 +11,10 @@ const config = require('./config/config.js');
 // 跨域
 const cors = require('koa-cors2');
 
+// 配置静态web服务的中间件
+const static = require('koa-static');
+app.use(static(__dirname + './public'));
+
 // 统一处理数据
 const bodyparser = require('koa-bodyparser');
 app.use(bodyparser());

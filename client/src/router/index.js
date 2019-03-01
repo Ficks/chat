@@ -70,6 +70,11 @@ export default new Router({
       title: "好友信息",
       component: resolve => require(['@/views/friendsInfo/friendsInfo.vue'], resolve)
     }, {
+      path: '/notice',
+      name: 'notice',
+      title: "新的朋友",
+      component: resolve => require(['@/views/notice/notice.vue'], resolve)
+    }, {
       path: '/chat',
       name: 'chat',
       title: "聊天",

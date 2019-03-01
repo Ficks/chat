@@ -9,6 +9,7 @@ export default {
             data
         })
     },
+    // 添加好友
     addFriends(data) {
         return http({
             url: '/addFriends',
@@ -16,4 +17,12 @@ export default {
             data
         })
     },
+    // 获取申请添加好友列表
+    getAddFriendsList(data) {
+        return http({
+            url: '/getAddFriendsList',
+            type: 'get',
+            data
+        })
+    }
 }

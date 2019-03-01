@@ -1,80 +1,118 @@
 <template>
-    <div class="container_c">
-        <!-- 左侧菜单 -->
-        <mu-container>
-              <mu-drawer :open.sync="openDrawer" :docked="docked" :right="position === 'right'">
-                  <div class="top">
-                      <div class="headimg">
-                          <img v-if="userInfo.headImg" :src="userInfo.headImg" alt="">
-                          <img v-else src="../../assets/headImg.jpg" alt="">
-                      </div>
-                      <div class="nickname">{{userInfo.nickName}}</div>
-                  </div>
-                  <mu-list class="menu_list">
-                      <mu-list-item button>
-                          <mu-list-item-action>
-                              <i class="iconfont icon-shezhi"></i>
-                          </mu-list-item-action>
-                          <mu-list-item-content>
-                              <mu-list-item-title>我的设置</mu-list-item-title>
-                          </mu-list-item-content>
-                      </mu-list-item>
+  <div class="container_c">
+    <!-- 左侧菜单 -->
+    <mu-container>
+      <mu-drawer
+        :open.sync="openDrawer"
+        :docked="docked"
+        :right="position === 'right'"
+      >
+        <div class="top">
+          <div class="headimg">
+            <img
+              v-if="userInfo.headImg"
+              :src="userInfo.headImg"
+              alt=""
+            >
+            <img
+              v-else
+              src="../../assets/headImg.jpg"
+              alt=""
+            >
+          </div>
+          <div class="nickname">{{userInfo.nickName}}</div>
+        </div>
+        <mu-list class="menu_list">
+          <mu-list-item button>
+            <mu-list-item-action>
+              <i class="iconfont icon-shezhi"></i>
+            </mu-list-item-action>
+            <mu-list-item-content>
+              <mu-list-item-title>我的设置</mu-list-item-title>
+            </mu-list-item-content>
+          </mu-list-item>
 
-                      <mu-list-item button>
-                          <mu-list-item-action>
-                              <i class="iconfont icon-qianbao"></i>
-                          </mu-list-item-action>
-                          <mu-list-item-content>
-                              <mu-list-item-title>我的钱包</mu-list-item-title>
-                          </mu-list-item-content>
-                      </mu-list-item>
+          <mu-list-item button>
+            <mu-list-item-action>
+              <i class="iconfont icon-qianbao"></i>
+            </mu-list-item-action>
+            <mu-list-item-content>
+              <mu-list-item-title>我的钱包</mu-list-item-title>
+            </mu-list-item-content>
+          </mu-list-item>
 
-                      <mu-list-item button>
-                          <mu-list-item-action>
-                              <i class="iconfont icon-tubiao309"></i>
-                          </mu-list-item-action>
-                          <mu-list-item-content>
-                              <mu-list-item-title>我的积分</mu-list-item-title>
-                          </mu-list-item-content>
-                      </mu-list-item>
+          <mu-list-item button>
+            <mu-list-item-action>
+              <i class="iconfont icon-tubiao309"></i>
+            </mu-list-item-action>
+            <mu-list-item-content>
+              <mu-list-item-title>我的积分</mu-list-item-title>
+            </mu-list-item-content>
+          </mu-list-item>
 
-                      <mu-list-item button>
-                          <mu-list-item-action>
-                              <i class="iconfont icon-shoucang"></i>
-                          </mu-list-item-action>
-                          <mu-list-item-content>
-                              <mu-list-item-title>我的收藏</mu-list-item-title>
-                          </mu-list-item-content>
-                      </mu-list-item>
+          <mu-list-item button>
+            <mu-list-item-action>
+              <i class="iconfont icon-shoucang"></i>
+            </mu-list-item-action>
+            <mu-list-item-content>
+              <mu-list-item-title>我的收藏</mu-list-item-title>
+            </mu-list-item-content>
+          </mu-list-item>
 
-                      <mu-list-item button @click="outLogin">
-                          <mu-list-item-action>
-                              <i class="iconfont icon-dengchu"></i>
-                          </mu-list-item-action>
-                          <mu-list-item-content>
-                              <mu-list-item-title>退出登录</mu-list-item-title>
-                          </mu-list-item-content>
-                      </mu-list-item>
-                  </mu-list>
-              </mu-drawer>
-        </mu-container>
-      
-      
-      <!-- 底部 -->
-        <div class="fixbom">
-          <mu-bottom-nav :value.sync="shift" shift>
-            <mu-bottom-nav-item to="message" value="movies" title="Chat" icon="ondemand_video"></mu-bottom-nav-item>
-            <mu-bottom-nav-item to="friends" value="books" title="通讯录" icon="books"></mu-bottom-nav-item>
-            <mu-bottom-nav-item to="find" value="music" title="发现" icon="music_note"></mu-bottom-nav-item>
-            <mu-bottom-nav-item to="world" value="pictures" title="世界" icon="photo"></mu-bottom-nav-item>
-        </mu-bottom-nav>
-      </div>
+          <mu-list-item
+            button
+            @click="outLogin"
+          >
+            <mu-list-item-action>
+              <i class="iconfont icon-dengchu"></i>
+            </mu-list-item-action>
+            <mu-list-item-content>
+              <mu-list-item-title>退出登录</mu-list-item-title>
+            </mu-list-item-content>
+          </mu-list-item>
+        </mu-list>
+      </mu-drawer>
+    </mu-container>
 
-      <!-- 路由 -->
-      <router-view />
-
-
+    <!-- 底部 -->
+    <div class="fixbom">
+      <mu-bottom-nav
+        :value.sync="shift"
+        shift
+      >
+        <mu-bottom-nav-item
+          to="message"
+          value="movies"
+          title="Chat"
+          icon="ondemand_video"
+        ></mu-bottom-nav-item>
+        <mu-bottom-nav-item
+          to="friends"
+          value="books"
+          title="通讯录"
+          icon="books"
+        ></mu-bottom-nav-item>
+        <mu-bottom-nav-item
+          to="find"
+          value="music"
+          title="发现"
+          icon="music_note"
+        ></mu-bottom-nav-item>
+        <mu-bottom-nav-item
+          to="world"
+          value="pictures"
+          title="世界"
+          icon="photo"
+        ></mu-bottom-nav-item>
+      </mu-bottom-nav>
     </div>
+
+    <!-- 路由 -->
+    <div class="router">
+      <router-view />
+    </div>
+
+  </div>
 </template>
 <script>
 import { mapGetters } from "vuex";
@@ -105,11 +143,15 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.router {
+  padding-bottom: 56px;
+}
 .fixbom {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
+  z-index: 999;
 }
 .top {
   width: 50%;
