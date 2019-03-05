@@ -5,17 +5,17 @@
     </mu-appbar>
     <div class="logo">
       <img src="@/assets/logo.png" alt="">
-      </div>
+    </div>
     <mu-container class="form">
       <mu-form ref="form" :model="validateForm" class="mu-demo-form">
         <mu-form-item label="手机号" prop="tel" :rules="telRules">
           <mu-text-field v-model="validateForm.tel" prop="tel"></mu-text-field>
         </mu-form-item>
         <mu-form-item label="密码" prop="pwd" :rules="pwdRules">
-            <mu-text-field type="password" :type="showPwd?'text':'password'" v-model="validateForm.pwd" :action-icon="showPwd?'visibility_off':'visibility'" :action-click="()=>showPwd=!showPwd" prop="pwd"></mu-text-field>
+          <mu-text-field type="password" :type="showPwd?'text':'password'" v-model="validateForm.pwd" :action-icon="showPwd?'visibility_off':'visibility'" :action-click="()=>showPwd=!showPwd" prop="pwd"></mu-text-field>
         </mu-form-item>
         <div class="submit">
-          <mu-button large full-width  color="primary" @click="submit">登 录</mu-button>
+          <mu-button large full-width color="primary" @click="submit">登 录</mu-button>
         </div>
         <div class="center">
           <mu-button color="secondary" to="/register" flat>立即注册</mu-button>
@@ -66,6 +66,7 @@ export default {
     },
     loginSubmit() {
       loginApi.login(this.validateForm).then(data => {
+        data.userInfo.sysPath = "http://192.168.1.221:3000";
         sessionStorage.userInfo = JSON.stringify(data.userInfo);
         sessionStorage.token = data.token;
         this.$store.commit("setToken", data.token);

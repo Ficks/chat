@@ -24,5 +24,13 @@ export default {
             type: 'get',
             data
         })
+    },
+    // 同意对方添加好友请求
+    agree(id) {
+        return http({
+            url: '/agree',
+            data: { id },
+            tips: true
+        })
     }
 }

@@ -10,10 +10,16 @@ const session = require('koa-session');
 const config = require('./config/config.js');
 // 跨域
 const cors = require('koa-cors2');
+const path = require('path');
 
-// 配置静态web服务的中间件
-const static = require('koa-static');
-app.use(static(__dirname + './public'));
+//设置静态资源的路径 
+const static = require('koa-static')
+const staticPath = './public'
+
+app.use(static(
+    path.join(__dirname, staticPath)
+))
+
 
 // 统一处理数据
 const bodyparser = require('koa-bodyparser');

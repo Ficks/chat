@@ -1,76 +1,42 @@
 <template>
-    <div class="container_c">
-        <mu-appbar
-            style="width: 100%;"
-            color="primary"
-        >
-            <mu-button
-                icon
-                slot="left"
-                @click="$router.back(-1)"
-            >
-                <i class="iconfont icon-back"></i>
-            </mu-button>
-            新的朋友
-            <mu-button
-                icon
-                slot="right"
-                to="/addFriends"
-            >
-                <mu-icon value="search"></mu-icon>
-            </mu-button>
-        </mu-appbar>
+  <div class="container_c">
+    <mu-appbar style="width: 100%;" color="primary">
+      <mu-button icon slot="left" @click="$router.back(-1)">
+        <i class="iconfont icon-back"></i>
+      </mu-button>
+      新的朋友
+      <mu-button icon slot="right" to="/addFriends">
+        <mu-icon value="search"></mu-icon>
+      </mu-button>
+    </mu-appbar>
 
-        <mu-paper
-            :z-depth="1"
-            class="demo-list-wrap"
-        >
-            <mu-list>
-                <mu-list-item
-                    avatar
-                    button
-                    :ripple="false"
-                    v-for="(item,index) in listArr"
-                >
-                    <mu-list-item-action>
-                        <mu-avatar>
-                            <img
-                                :src="item.headImg"
-                                alt=""
-                                v-if="item.headImg"
-                            >
-                            <img
-                                v-else
-                                src="@/assets/headImg.jpg"
-                                alt=""
-                            >
-                        </mu-avatar>
-                    </mu-list-item-action>
-                    <mu-list-item-title>{{item.nickName}}</mu-list-item-title>
-                    <mu-list-item-action>
-                        <div
-                            class="btns"
-                            v-if="item.status==2"
-                        >
-                            <mu-button
-                                @click="onSubmit(item)"
-                                color="primary"
-                            >接受</mu-button>
-                            <mu-button color="error">拒绝</mu-button>
-                        </div>
-                        <div
-                            class="tips"
-                            v-if="item.status"
-                        >
-                            {{item.status | statusMsg}}
-                        </div>
-                    </mu-list-item-action>
-                </mu-list-item>
+    <mu-paper :z-depth="1" class="demo-list-wrap">
+      <mu-list>
+        <mu-list-item avatar button :ripple="false" v-for="(item,index) in listArr">
+          <mu-list-item-action>
+            <mu-avatar>
+              <img :src="userInfo.sysPath+item.headImg" alt="" v-if="item.headImg">
+            </mu-avatar>
+          </mu-list-item-action>
+          <mu-list-item-title>{{item.nickName}}</mu-list-item-title>
+          <mu-list-item-action>
+            <div class="btns" v-if="item.status==2">
+              <mu-button @click="onSubmit(item)" color="primary">接受</mu-button>
+              <mu-button color="error">拒绝</mu-button>
+            </div>
+            <div class="tips" v-if="item.status">
 
-            </mu-list>
-            <mu-divider></mu-divider>
-        </mu-paper>
-    </div>
+              <mu-chip class="demo-chip">
+                {{item.status | statusMsg}}
+              </mu-chip>
+            </div>
+          </mu-list-item-action>
+        </mu-list-item>
+
+      </mu-list>
+      <mu-divider></mu-divider>
+    </mu-paper>
+  </div>
 </template>
 
 <script>
@@ -83,11 +49,11 @@ export default {
   filters: {
     statusMsg(status) {
       if (status == 1) {
-        return "您已经通过了对方的好友请求";
+        return "已同意好友添加";
       } else if (status == 3) {
-        return "您拒绝了好友请求";
+        return "拒绝了好友添加";
       } else if (status == 4) {
-        return "您将该好友加入了黑名单";
+        return "加入黑名单ta";
       }
     }
   },
@@ -109,7 +75,10 @@ export default {
     },
     // 同意好友的添加
     onSubmit(item) {
-      console.log(item);
+      friendsApi.agree(item.id).then(data => {
+        console.log(data);
+        this.getAddFriendsList();
+      });
     }
   },
   created() {

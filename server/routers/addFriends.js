@@ -125,7 +125,6 @@ router.post('/addFriends', async ctx => {
 // 获取好友申请列表
 router.get('/getAddFriendsList', async ctx => {
     const { query } = ctx.request;
-    console.log(query)
     await mysql.query(`select * from user a,friends b where a.id=b.aid and b.bId=${query.id}`).then(data => {
         ctx.body = {
             status: 1,
@@ -136,6 +135,23 @@ router.get('/getAddFriendsList', async ctx => {
         ctx.body = {
             status: -1,
             msg: "获取好友申请列表失败"
+        }
+    })
+})
+
+router.post('/agree', async ctx => {
+    const { body } = ctx.request;
+    await mysql.query(`UPDATE friends SET status=1 where id=${body.id}`).then(data => {
+        ctx.body = {
+            status: 1,
+            msg: "添加成功"
+        }
+    }).catch(err => {
+        console.log(000);
+        console.log(err);
+        ctx.body = {
+            status: -1,
+            msg: "添加失败"
         }
     })
 })
