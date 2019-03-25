@@ -31,14 +31,14 @@ router.get('/getFriends', async ctx => {
         }
     })
 
-
     // 查询是否好友关系
     await searchFriends(d.id, ctx.session.userInfo.id).then(data => {
         let obj = {
             status: 1,
             data: {
                 isFriends: true,//是否好友关系
-                data: d
+                status: 1,
+                data: d,
             }
         }
         // status 0-不是好友关系 1-好友关系 2-等待对方同意 3-对方拒绝 4-黑名单
@@ -46,6 +46,7 @@ router.get('/getFriends', async ctx => {
             // 不是好友关系
             obj.data.isFriends = false;
         }
+        obj.data.status = data.length > 0 ? data[0].status : 0;
         ctx.body = obj;
     }).catch(err => {
         ctx.body = {
@@ -53,8 +54,6 @@ router.get('/getFriends', async ctx => {
             msg: "查询失败"
         }
     })
-
-
 })
 
 
@@ -67,7 +66,8 @@ router.post('/addFriends', async ctx => {
     // status 0-不是好友关系 1-好友关系 2-等待对方同意 3-对方拒绝 4-黑名单
     let bUser = 0;
     // 查询是否好友关系
-    await searchFriends(body.id, ctx.session.userInfo.id).then(data => {
+    console.log("w d id：" + aUser.id)
+    await searchFriends(body.id, aUser.id).then(data => {
         if (data.length != 0 && data[0].isFriends != 0) {
             bUser = data[0];
         }
@@ -78,13 +78,14 @@ router.post('/addFriends', async ctx => {
         }
     })
 
-    console.log(bUser);
+    console.log(bUser)
     // 不是好友添加
-    if (bUser.status == 0) {
+    if (bUser == 0 || bUser.status == 0) {
+        console.log("不是好友添加")
         await mysql.query(`INSERT INTO friends(aId,bId,status) VALUES(${aUser.id},${body.id}, 2)`).then(data => {
             ctx.body = {
                 status: 1,
-                msg: "添加好友通知发送成功"
+                msg: "好友请求发送成功"
             }
         }).catch(err => {
             ctx.body = {
@@ -100,20 +101,23 @@ router.post('/addFriends', async ctx => {
     } else if (bUser.status == 2) {
         ctx.body = {
             status: 1,
-            msg: "请等待对方同意"
+            msg: "请等待对方验证"
         }
     } else if (bUser.status == 3) {
-        await mysql.query(`update friends set status=2 where id=${bUser.id}`).then(data => {
+        // 如果是已拒绝过的，重新添加的时候重置两者id关系 aid为添加者 bid为接受者
+        await mysql.query(`update friends set status=2,aId=${aUser.id},bId=${body.id} where id=${bUser.id}`).then(data => {
             ctx.body = {
                 status: 1,
-                msg: "添加好友通知发送成功"
+                msg: "好友请求发送成功"
             }
         }).catch(err => {
+            console.log(err)
             ctx.body = {
                 status: -1,
                 msg: "添加失败"
             }
         })
+
     } else if (bUser.status == 4) {
         ctx.body = {
             status: -1,
@@ -122,10 +126,29 @@ router.post('/addFriends', async ctx => {
     }
 })
 
+// 拒绝好友
+router.post('/refuseFriends', async ctx => {
+    const { body } = ctx.request;
+    await mysql.query(`update friends set status=3 where id=${body.id}`).then(data => {
+        ctx.body = {
+            status: 1,
+            msg: "已拒绝"
+        }
+    }).catch(err => {
+        ctx.body = {
+            status: -1,
+            msg: "请重新尝试此操作"
+        }
+    })
+})
+
 // 获取好友申请列表
 router.get('/getAddFriendsList', async ctx => {
     const { query } = ctx.request;
-    await mysql.query(`select * from user a,friends b where a.id=b.aid and b.bId=${query.id}`).then(data => {
+    // aid是添加者
+    // bid是接受者
+    // 如果b表的aid是访问者的话，那么就关联bid的user表数据返回
+    await mysql.query(`select * from user a,friends b where (b.aId=${query.id} and a.id=b.bId) || (b.bId=${query.id}  and a.id=b.aId)`).then(data => {
         ctx.body = {
             status: 1,
             msg: "获取成功",
@@ -147,8 +170,6 @@ router.post('/agree', async ctx => {
             msg: "添加成功"
         }
     }).catch(err => {
-        console.log(000);
-        console.log(err);
         ctx.body = {
             status: -1,
             msg: "添加失败"
@@ -158,7 +179,6 @@ router.post('/agree', async ctx => {
 
 // 查询该账号是否存在
 function searchUserId(tel) {
-    console.log(tel);
     return new Promise((reslove, reject) => {
         mysql.query(`select * from user where tel=${tel}`).then((data) => {
             reslove(data);
@@ -170,6 +190,9 @@ function searchUserId(tel) {
 
 // 查询好友是否存在
 function searchFriends(id, uid) {
+    console.log('看看id');
+    console.log(id);
+    console.log(uid)
     return new Promise((resolve, reject) => {
         mysql.query(`select * from Friends where (aId=${id} and bId=${uid}) or (aId=${uid} and bId=${id})`).then(data => {
             resolve(data);

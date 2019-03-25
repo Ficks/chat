@@ -17,6 +17,13 @@ export default {
             data
         })
     },
+    refuseFriends(data) {
+        return http({
+            url: '/refuseFriends',
+            tips: true,
+            data: { id: data }
+        })
+    },
     // 获取申请添加好友列表
     getAddFriendsList(data) {
         return http({

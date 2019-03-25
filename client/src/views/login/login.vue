@@ -66,6 +66,7 @@ export default {
     },
     loginSubmit() {
       loginApi.login(this.validateForm).then(data => {
+        document.title = data.userInfo.nickName;
         data.userInfo.sysPath = "http://192.168.1.221:3000";
         sessionStorage.userInfo = JSON.stringify(data.userInfo);
         sessionStorage.token = data.token;

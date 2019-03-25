@@ -20,19 +20,18 @@
           </mu-list-item-action>
           <mu-list-item-title>{{item.nickName}}</mu-list-item-title>
           <mu-list-item-action>
-            <div class="btns" v-if="item.status==2">
+            <div class="btns" v-if="item.status==2 && item.bId==userInfo.id">
               <mu-button @click="onSubmit(item)" color="primary">接受</mu-button>
-              <mu-button color="error">拒绝</mu-button>
+              <mu-button @click="refuseFriends(item)" color="error">拒绝</mu-button>
             </div>
-            <div class="tips" v-if="item.status">
-
+            <div v-else-if="item.status">
               <mu-chip class="demo-chip">
-                {{item.status | statusMsg}}
+                {{statusMsg(item)}}
               </mu-chip>
             </div>
           </mu-list-item-action>
         </mu-list-item>
-
+        <p class="tips" v-if="listArr.length==0">暂无记录</p>
       </mu-list>
       <mu-divider></mu-divider>
     </mu-paper>
@@ -46,17 +45,6 @@ export default {
   computed: {
     ...mapGetters(["userInfo"])
   },
-  filters: {
-    statusMsg(status) {
-      if (status == 1) {
-        return "已同意好友添加";
-      } else if (status == 3) {
-        return "拒绝了好友添加";
-      } else if (status == 4) {
-        return "加入黑名单ta";
-      }
-    }
-  },
   data() {
     return {
       listArr: []
@@ -68,8 +56,9 @@ export default {
       friendsApi
         .getAddFriendsList({ id: this.userInfo.id })
         .then(data => {
-          console.log(data);
           this.listArr = data;
+          console.log(11);
+          console.log(this.listArr);
         })
         .catch(err => {});
     },
@@ -79,6 +68,29 @@ export default {
         console.log(data);
         this.getAddFriendsList();
       });
+    },
+    // 拒绝添加
+    refuseFriends(item) {
+      friendsApi.refuseFriends(item.id).then(data => {
+        this.getAddFriendsList();
+      });
+    },
+    // 过滤器
+    statusMsg(item) {
+      if (item.status == 1) {
+        return "已添加";
+      } else if (item.status == 2) {
+        return "等待验证";
+      } else if (item.status == 3) {
+        if (item.aId == this.userInfo.id) {
+          return "被拒绝";
+        } else {
+          return "已拒绝";
+        }
+        console.log(d);
+      } else if (item.status == 4) {
+        return "黑名单";
+      }
     }
   },
   created() {

@@ -18,6 +18,7 @@ Vue.config.productionTip = false
 
 
 let userInfo = sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {};
+document.title = userInfo.nickName;
 store.commit('setUserInfo', userInfo);
 router.beforeEach((to, from, next) => {
   let token = store.state.token || sessionStorage.token;
