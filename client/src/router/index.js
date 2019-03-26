@@ -75,7 +75,7 @@ export default new Router({
       title: "新的朋友",
       component: resolve => require(['@/views/notice/notice.vue'], resolve)
     }, {
-      path: '/chat',
+      path: '/chat/:id',
       name: 'chat',
       title: "聊天",
       component: resolve => require(['@/views/chat/chat.vue'], resolve)

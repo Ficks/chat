@@ -57,6 +57,29 @@ router.get('/getFriends', async ctx => {
 })
 
 
+// 查询好友关系
+router.get('/getFriendsGourp', async ctx => {
+    const { query } = ctx.request;
+    const user = ctx.session.userInfo;
+    let sql = `select *,a.id as userId from user a,friends b where (b.aId=${query.id} and a.id=b.aId and b.bId=${user.id}) or (b.bId=${query.id}  and a.id=b.bId and b.aId=${user.id})`;
+    if (query.tel) {
+        sql = `select * from user a,friends b where (b.aId=a.id and a.tel=${query.tel} and b.bId=${user.id}) or (b.bId=a.id  and a.tel=${query.tel} and b.aId=${user.id})`;
+    }
+    await mysql.query(sql).then(data => {
+        ctx.body = {
+            status: 1,
+            msg: "查询成功",
+            data: data.length > 0 ? data[0] : []
+        }
+    }).catch(err => {
+        ctx.body = {
+            status: -1,
+            msg: "查询失败"
+        }
+    })
+})
+
+
 
 // 添加好友
 router.post('/addFriends', async ctx => {
@@ -80,7 +103,7 @@ router.post('/addFriends', async ctx => {
 
     console.log(bUser)
     // 不是好友添加
-    if (bUser == 0 || bUser.status == 0) {
+    if (bUser == 0) {
         console.log("不是好友添加")
         await mysql.query(`INSERT INTO friends(aId,bId,status) VALUES(${aUser.id},${body.id}, 2)`).then(data => {
             ctx.body = {
@@ -103,8 +126,8 @@ router.post('/addFriends', async ctx => {
             status: 1,
             msg: "请等待对方验证"
         }
-    } else if (bUser.status == 3) {
-        // 如果是已拒绝过的，重新添加的时候重置两者id关系 aid为添加者 bid为接受者
+    } else if (bUser.status == 0 || bUser.status == 3) {
+        // 如果是有记录，重新添加的时候重置两者id关系 aid为添加者 bid为接受者
         await mysql.query(`update friends set status=2,aId=${aUser.id},bId=${body.id} where id=${bUser.id}`).then(data => {
             ctx.body = {
                 status: 1,
@@ -148,7 +171,8 @@ router.get('/getAddFriendsList', async ctx => {
     // aid是添加者
     // bid是接受者
     // 如果b表的aid是访问者的话，那么就关联bid的user表数据返回
-    await mysql.query(`select * from user a,friends b where (b.aId=${query.id} and a.id=b.bId) || (b.bId=${query.id}  and a.id=b.aId)`).then(data => {
+    let sql = `select b.aId,b.bId,a.id as userId,a.headImg,a.nickName,b.status from user a,friends b where (b.aId=${query.id} and a.id=b.bId) or (b.bId=${query.id}  and a.id=b.aId) ORDER BY b.id desc limit ${(query.page - 1) * query.size},${query.size}`;
+    await mysql.query(sql).then(data => {
         ctx.body = {
             status: 1,
             msg: "获取成功",
@@ -162,6 +186,7 @@ router.get('/getAddFriendsList', async ctx => {
     })
 })
 
+// 同意好友申请
 router.post('/agree', async ctx => {
     const { body } = ctx.request;
     await mysql.query(`UPDATE friends SET status=1 where id=${body.id}`).then(data => {
@@ -173,6 +198,43 @@ router.post('/agree', async ctx => {
         ctx.body = {
             status: -1,
             msg: "添加失败"
+        }
+    })
+})
+
+// 删除好友
+router.post('/deleteFriends', async ctx => {
+    const { body } = ctx.request;
+    const user = ctx.session.userInfo;
+    await mysql.query(`UPDATE friends SET status=0 where (aId=${body.id} and bId=${user.id}) or aId=${user.id} and bId=${body.id}`).then(data => {
+        ctx.body = {
+            status: 1,
+            msg: "已删除该好友"
+        }
+    }).catch(err => {
+        ctx.body = {
+            status: -1,
+            msg: "删除失败"
+        }
+    })
+})
+
+// 查询好友列表
+router.get('/getFriendsList', async ctx => {
+    const { query } = ctx.request;
+    let user = ctx.session.userInfo;
+    let sql = `select b.id,a.id as userId,a.tel,a.nickName,a.headImg from user a,friends b where b.status=1 and ((b.aId=${user.id} and a.id=b.bId) or (b.bId=${user.id} and a.id=b.aId)) limit ${(query.page - 1) * query.size},${query.size}`
+    console.log(sql);
+    await mysql.query(sql).then(data => {
+        ctx.body = {
+            status: 1,
+            data: data,
+            msg: "查询成功"
+        }
+    }).catch(err => {
+        ctx.body = {
+            status: -1,
+            msg: "查询失败"
         }
     })
 })
@@ -201,5 +263,6 @@ function searchFriends(id, uid) {
         })
     })
 }
+
 
 module.exports = router;

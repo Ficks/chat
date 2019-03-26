@@ -1,36 +1,34 @@
 <template>
-    <div class="container_c">
-        <mu-appbar style="width: 100%;" color="primary">
-          <mu-button icon slot="left" @click="$router.back(-1)">
-            <i class="iconfont icon-back"></i>
-          </mu-button>
-          Ficks
-          <mu-button icon slot="right" @click="$router.back(-1)">
-            <i class="iconfont icon-gengduo"></i>
-          </mu-button>
-        </mu-appbar>
+  <div class="container_c">
+    <mu-appbar style="width: 100%;" color="primary">
+      <mu-button icon slot="left" @click="$router.back(-1)">
+        <i class="iconfont icon-back"></i>
+      </mu-button>
+      Ficks
+      <mu-button icon slot="right" @click="$router.back(-1)">
+        <i class="iconfont icon-gengduo"></i>
+      </mu-button>
+    </mu-appbar>
 
-        <div class="chatRecord">
+    <div class="chatRecord">
 
+      <div :class="{my:userInfo.tel==item.tel}" class="list" v-for="(item,index) in chatList" :key="index">
+        <div class="headImg"><img src="@/assets/headImg.jpg" alt=""></div>
+        <div class="mbox">
+          <!-- <h3>Ficks</h3> -->
+          <div class="text">{{item.msg}}</div>
+        </div>
+      </div>
 
-          <div :class="{my:userInfo.tel==item.tel}" class="list" v-for="(item,index) in chatList">
-            <div class="headImg"><img src="@/assets/headImg.jpg" alt=""></div>
-            <div class="mbox">
-              <!-- <h3>Ficks</h3> -->
-              <div class="text">{{item.msg}}</div>
-            </div>
-          </div>
+    </div>
 
-          </div>
-        
-
-        <div class="chat_bom">
-          <div class="chat_box">
-            <div class="btns">
-              <span class="iconfont icon-smile"></span>
-            </div>
-            <textarea v-model="chatVal" />
-            <div class="btns w78" v-if="!chatVal">
+    <div class="chat_bom">
+      <div class="chat_box">
+        <div class="btns">
+          <span class="iconfont icon-smile"></span>
+        </div>
+        <textarea v-model="chatVal" />
+        <div class="btns w78" v-if="!chatVal">
               <span class="iconfont icon-smile"></span>
               <span class="iconfont icon-jiahao"></span>
             </div>

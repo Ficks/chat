@@ -1,11 +1,10 @@
 import http from '../axios/axios';
 export default {
-    // 查找好友
-    getFriends(data) {
+    // 查询是否好友关系 --返回状态码
+    getFriendsGourp(data) {
         return http({
-            url: '/getFriends',
+            url: '/getFriendsGourp',
             type: 'get',
-            tips: true,
             data
         })
     },
@@ -38,6 +37,22 @@ export default {
             url: '/agree',
             data: { id },
             tips: true
+        })
+    },
+    // 删除好友
+    deleteFriends(id) {
+        return http({
+            url: '/deleteFriends',
+            data: { id },
+            tips: true
+        })
+    },
+    // 查询好友列表
+    getFriendsList(data) {
+        return http({
+            type: "get",
+            url: '/getFriendsList',
+            data,
         })
     }
 }

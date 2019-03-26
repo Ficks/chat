@@ -2,23 +2,11 @@
   <div class="container_c">
     <!-- 左侧菜单 -->
     <mu-container>
-      <mu-drawer
-        :open.sync="openDrawer"
-        :docked="docked"
-        :right="position === 'right'"
-      >
+      <mu-drawer :open.sync="openDrawer" :docked="docked" :right="position === 'right'">
         <div class="top">
           <div class="headimg">
-            <img
-              v-if="userInfo.headImg"
-              :src="userInfo.headImg"
-              alt=""
-            >
-            <img
-              v-else
-              src="../../assets/headImg.jpg"
-              alt=""
-            >
+            <img v-if="userInfo.headImg" :src="userInfo.headImg" alt="">
+            <img v-else src="../../assets/headImg.jpg" alt="">
           </div>
           <div class="nickname">{{userInfo.nickName}}</div>
         </div>
@@ -59,10 +47,7 @@
             </mu-list-item-content>
           </mu-list-item>
 
-          <mu-list-item
-            button
-            @click="outLogin"
-          >
+          <mu-list-item button @click="outLogin">
             <mu-list-item-action>
               <i class="iconfont icon-dengchu"></i>
             </mu-list-item-action>
@@ -76,41 +61,18 @@
 
     <!-- 底部 -->
     <div class="fixbom">
-      <mu-bottom-nav
-        :value.sync="shift"
-        shift
-      >
-        <mu-bottom-nav-item
-          to="message"
-          value="movies"
-          title="Chat"
-          icon="ondemand_video"
-        ></mu-bottom-nav-item>
-        <mu-bottom-nav-item
-          to="friends"
-          value="books"
-          title="通讯录"
-          icon="books"
-        ></mu-bottom-nav-item>
-        <mu-bottom-nav-item
-          to="find"
-          value="music"
-          title="发现"
-          icon="music_note"
-        ></mu-bottom-nav-item>
-        <mu-bottom-nav-item
-          to="world"
-          value="pictures"
-          title="世界"
-          icon="photo"
-        ></mu-bottom-nav-item>
+      <mu-bottom-nav :value.sync="shift" shift>
+        <mu-bottom-nav-item to="message" value="movies" title="Chat" icon="ondemand_video"></mu-bottom-nav-item>
+        <mu-bottom-nav-item to="friends" value="books" title="通讯录" icon="books"></mu-bottom-nav-item>
+        <mu-bottom-nav-item to="find" value="music" title="发现" icon="music_note"></mu-bottom-nav-item>
+        <mu-bottom-nav-item to="world" value="pictures" title="世界" icon="photo"></mu-bottom-nav-item>
       </mu-bottom-nav>
     </div>
 
     <!-- 路由 -->
-    <div class="router">
+    <keep-alive>
       <router-view />
-    </div>
+    </keep-alive>
 
   </div>
 </template>

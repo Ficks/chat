@@ -5,9 +5,17 @@ export default {
         }
     },
     methods: {
-        newImg() {
-            // let image = new Image();
-
+        openWin(options) {
+            if (options.path) {
+                this.$router.push({
+                    path: options.path
+                })
+            } else {
+                this.$router.push({
+                    name: options.name,
+                    query: options.query || ""
+                })
+            }
         }
     },
     created() {
