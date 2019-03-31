@@ -26,11 +26,13 @@ Vue.use(Message);
 Vue.config.productionTip = false
 
 
+let token = sessionStorage.token ? sessionStorage.token : "";
 let userInfo = sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {};
 document.title = userInfo.nickName;
+store.commit('setToken', token);
 store.commit('setUserInfo', userInfo);
 router.beforeEach((to, from, next) => {
-  let token = store.state.token || sessionStorage.token;
+  let token = store.state.token || token;
   to.path == "/login" ? next() : token ? next() : next("/login");
   next();
 });

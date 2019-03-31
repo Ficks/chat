@@ -3,9 +3,8 @@ const Koa = require('koa');
 // 实例化
 const app = new Koa();
 // Io
-const IoFn = require('./Controller/chat');
+const socket = require('./Controller/chat').socket(app);
 
-IoFn(app);
 // 路由
 const router = require('./routers/index');
 // SESSION

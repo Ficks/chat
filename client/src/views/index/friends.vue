@@ -5,7 +5,7 @@
       <mu-button icon slot="left" @click="openDrawer=true">
         <mu-icon value="menu"></mu-icon>
       </mu-button>
-      通讯录
+      {{$route.meta.title}}
       <mu-button icon slot="right" to="/addFriends">
         <i class="iconfont icon-tianjia"></i>
       </mu-button>
@@ -170,7 +170,8 @@ export default {
         })
         .catch(err => {});
     }
-  }
+  },
+  mounted() {}
 };
 </script>
 

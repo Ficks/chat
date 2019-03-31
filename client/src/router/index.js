@@ -4,81 +4,111 @@ import HelloWorld from '@/components/HelloWorld'
 
 Vue.use(Router)
 
+Router.prototype.goBack = () => {
+  this.a.isBack = true;
+  window.history.go(-1);
+}
+
 export default new Router({
   routes: [
     {
       path: '/',
-      name: "首页",
+      name: "app",
+      component: resolve => require(['@/views/index'], resolve),
       redirect: to => {
         return '/index/message'
-      }
-    },
+      },
+      children: [
+        {
+          path: '/login',
+          name: 'login',
+          meta: {
+            title: '登录'
+          },
+          component: resolve => require(['@/views/login/login'], resolve)
+        }, {
+          path: '/register',
+          name: 'register',
+          meta: {
+            title: '注册'
+          },
+          component: resolve => require(['@/views/register/register'], resolve)
+        }, {
+          path: '/retrievePwd',
+          name: 'retrievePwd',
+          meta: {
+            title: '找回密码'
+          },
+          component: resolve => require(['@/views/retrievePwd/retrievePwd'], resolve)
+        }, {
+          path: '/index',
+          name: 'index',
+          meta: {
+            title: '首页'
+          },
+          component: resolve => require(['@/views/index/index'], resolve),
+          children: [{
+            path: '/index/message',
+            name: 'message',
+            meta: {
+              title: '聊天记录'
+            },
+            component: resolve => require(['@/views/index/message'], resolve)
 
-    {
-      path: '/login',
-      name: 'login',
-      title: "登录",
-      component: resolve => require(['@/views/login/login.vue'], resolve)
-    }, {
-      path: '/register',
-      name: 'register',
-      title: "注册",
-      component: resolve => require(['@/views/register/register.vue'], resolve)
-    }, {
-      path: '/retrievePwd',
-      name: 'retrievePwd',
-      title: "找回密码",
-      component: resolve => require(['@/views/retrievePwd/retrievePwd.vue'], resolve)
-    }, {
-      path: '/index',
-      name: 'index',
-      title: "首页",
-      component: resolve => require(['@/views/index/index.vue'], resolve),
-      children: [{
-        path: '/index/message',
-        name: 'message',
-        title: "聊天记录",
-        component: resolve => require(['@/views/index/message.vue'], resolve)
+          }, {
+            path: '/index/friends',
+            name: 'friends',
+            meta: {
+              title: '通讯录'
+            },
+            component: resolve => require(['@/views/index/friends'], resolve)
 
-      }, {
-        path: '/index/friends',
-        name: 'friends',
-        title: "通讯录",
-        component: resolve => require(['@/views/index/friends.vue'], resolve)
+          }, {
+            path: '/index/find',
+            name: 'find',
+            meta: {
+              title: '发现'
+            },
+            component: resolve => require(['@/views/index/find'], resolve)
 
-      }, {
-        path: '/index/find',
-        name: 'find',
-        title: "发现",
-        component: resolve => require(['@/views/index/find.vue'], resolve)
+          }, {
+            path: '/index/world',
+            name: 'world',
+            meta: {
+              title: '世界'
+            },
+            component: resolve => require(['@/views/index/world'], resolve)
 
-      }, {
-        path: '/index/world',
-        name: 'world',
-        title: "世界",
-        component: resolve => require(['@/views/index/world.vue'], resolve)
-
-      },]
-    }, {
-      path: '/addFriends',
-      name: 'addFriends',
-      title: "添加好友",
-      component: resolve => require(['@/views/addFriends/addFriends.vue'], resolve)
-    }, {
-      path: '/friendsInfo',
-      name: 'friendsInfo',
-      title: "好友信息",
-      component: resolve => require(['@/views/friendsInfo/friendsInfo.vue'], resolve)
-    }, {
-      path: '/notice',
-      name: 'notice',
-      title: "新的朋友",
-      component: resolve => require(['@/views/notice/notice.vue'], resolve)
-    }, {
-      path: '/chat/:id',
-      name: 'chat',
-      title: "聊天",
-      component: resolve => require(['@/views/chat/chat.vue'], resolve)
+          },]
+        }, {
+          path: '/addFriends',
+          name: 'addFriends',
+          meta: {
+            title: '添加好友'
+          },
+          component: resolve => require(['@/views/addFriends/addFriends'], resolve)
+        }, {
+          path: '/friendsInfo',
+          name: 'friendsInfo',
+          meta: {
+            title: '好友信息'
+          },
+          component: resolve => require(['@/views/friendsInfo/friendsInfo'], resolve)
+        }, {
+          path: '/notice',
+          name: 'notice',
+          meta: {
+            title: '新的朋友'
+          },
+          component: resolve => require(['@/views/notice/notice'], resolve)
+        }, {
+          path: '/chat/:id',
+          name: 'chat',
+          meta: {
+            title: '聊天'
+          },
+          component: resolve => require(['@/views/chat/chat'], resolve)
+        },]
     },
   ]
 })

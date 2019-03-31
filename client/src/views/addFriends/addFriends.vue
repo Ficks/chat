@@ -1,11 +1,10 @@
 <template>
   <div class="container_c">
-    <div class="null"></div>
     <mu-appbar style="width: 100%;" color="primary">
-      <mu-button icon slot="left" @click="$router.back(-1)">
+      <mu-button icon slot="left" @click="$router.goBack">
         <i class="iconfont icon-back"></i>
       </mu-button>
-      添加好友
+      {{$route.meta.title}}
     </mu-appbar>
 
     <div class="search">

@@ -1,11 +1,10 @@
 <template>
   <div class="container_c">
-    <div class="null"></div>
     <mu-appbar style="width: 100%;" color="primary">
-      <mu-button icon slot="left" @click="$router.back(-1)">
+      <mu-button icon slot="left" @click="$router.goBack">
         <i class="iconfont icon-back"></i>
       </mu-button>
-      好友信息
+      {{$route.meta.title}}
     </mu-appbar>
 
     <mu-container>
@@ -75,12 +74,14 @@ export default {
         d = { tel: this.tel };
       }
       friendsApi.getFriendsGourp(d).then(data => {
-        this.userData = data;
+        console.log(data);
+        this.userData = data.data;
       });
     },
     // 添加好友
     addFriends() {
-      friendsApi.addFriends(this.userData.data).then(data => {
+      let id = this.userData.userId;
+      friendsApi.addFriends(this.userData).then(data => {
         this.userData.status = 2;
       });
     },
@@ -92,7 +93,7 @@ export default {
     },
     // 删除好友
     deleteFriends() {
-      friendsApi.deleteFriends(this.userData.id).then(data => {
+      friendsApi.deleteFriends(this.userData).then(data => {
         this.userData.status = 0;
         this.closeSimpleDialog();
       });

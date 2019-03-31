@@ -1,11 +1,11 @@
 <template>
   <div class="container_c">
     <mu-appbar style="width: 100%;" color="secondary">
-      <mu-button icon slot="left" @click="$router.back(-1)">
+      <mu-button icon slot="left" @click="$router.goBack">
         <i class="iconfont icon-back"></i>
       </mu-button>
-        注册
-      </mu-appbar>
+      注册
+    </mu-appbar>
     <mu-container class="form">
       <mu-form ref="form" :model="validateForm" class="mu-demo-form">
         <mu-form-item label="手机号" prop="tel" :rules="telRules">
@@ -13,8 +13,8 @@
         </mu-form-item>
         <mu-form-item label="图形验证码" prop="imgCode" :rules="imgCodeRules" class="imgcode">
           <mu-text-field v-model="validateForm.imgCode" prop="imgCode"></mu-text-field>
-          <mu-button flat class="imgcode_btn" v-html="imgCode"  @click="getImgCode">
-            
+          <mu-button flat class="imgcode_btn" v-html="imgCode" @click="getImgCode">
+
           </mu-button>
         </mu-form-item>
 
@@ -24,16 +24,16 @@
         </mu-form-item>
 
         <mu-form-item label="密码" prop="pwd" :rules="pwdRules">
-            <mu-text-field type="password" :type="showPwd?'text':'password'" v-model="validateForm.pwd" :action-icon="showPwd?'visibility_off':'visibility'" :action-click="()=>showPwd=!showPwd" prop="pwd"></mu-text-field>
+          <mu-text-field type="password" :type="showPwd?'text':'password'" v-model="validateForm.pwd" :action-icon="showPwd?'visibility_off':'visibility'" :action-click="()=>showPwd=!showPwd" prop="pwd"></mu-text-field>
         </mu-form-item>
         <mu-form-item label="确认密码" prop="qrPwd" :rules="qrPwdRules">
-            <mu-text-field type="password" :type="showQrPwd?'text':'password'" v-model="validateForm.qrPwd" :action-icon="showQrPwd?'visibility_off':'visibility'" :action-click="()=>showQrPwd=!showQrPwd" prop="qrPwd"></mu-text-field>
+          <mu-text-field type="password" :type="showQrPwd?'text':'password'" v-model="validateForm.qrPwd" :action-icon="showQrPwd?'visibility_off':'visibility'" :action-click="()=>showQrPwd=!showQrPwd" prop="qrPwd"></mu-text-field>
         </mu-form-item>
         <mu-form-item prop="isAgree" :rules="argeeRules">
           <mu-checkbox label="同意用户协议" @click="openFullscreen=true" v-model="validateForm.isAgree"></mu-checkbox>
         </mu-form-item>
         <div class="submit">
-          <mu-button large full-width  color="secondary" :disabled="isReg" @click="submit">注 册</mu-button>
+          <mu-button large full-width color="secondary" :disabled="isReg" @click="submit">注 册</mu-button>
         </div>
         <div class="center">
           <mu-button flat to="/login">去登录</mu-button>
@@ -41,21 +41,20 @@
       </mu-form>
     </mu-container>
 
-    
     <mu-dialog width="360" transition="slide-bottom" fullscreen :open.sync="openFullscreen">
-        <mu-appbar color="primary" title="用户协议">
-          <mu-button slot="left" icon @click="onCloseOpen">
-            <mu-icon value="close"></mu-icon>
-          </mu-button>
-        </mu-appbar>
-        <div style="padding: 24px;">
-          this is a fullscreen dialog
-        </div>
-        <div class="center">
-          <mu-button color="primary" @click="openFullscreen=false">同意用户协议</mu-button>
-          <mu-button @click="onCloseOpen">取消</mu-button>
-        </div>
-      </mu-dialog>
+      <mu-appbar color="primary" title="用户协议">
+        <mu-button slot="left" icon @click="onCloseOpen">
+          <mu-icon value="close"></mu-icon>
+        </mu-button>
+      </mu-appbar>
+      <div style="padding: 24px;">
+        this is a fullscreen dialog
+      </div>
+      <div class="center">
+        <mu-button color="primary" @click="openFullscreen=false">同意用户协议</mu-button>
+        <mu-button @click="onCloseOpen">取消</mu-button>
+      </div>
+    </mu-dialog>
   </div>
 </template>
 

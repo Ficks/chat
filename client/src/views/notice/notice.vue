@@ -1,7 +1,7 @@
 <template>
   <div class="container_c" ref="container">
     <mu-appbar style="width: 100%;" color="primary">
-      <mu-button icon slot="left" @click="$router.back(-1)">
+      <mu-button icon slot="left" @click="$router.goBack">
         <i class="iconfont icon-back"></i>
       </mu-button>
       新的朋友
@@ -51,7 +51,7 @@ import listArr from "@/mixins/listArr";
 export default {
   mixins: [common, listArr],
   computed: {
-    ...mapGetters(["userInfo"])
+    ...mapGetters(["userInfo", "socket"])
   },
   data() {
     return {};
@@ -70,13 +70,13 @@ export default {
     },
     // 同意好友的添加
     onSubmit(item) {
-      friendsApi.agree(item.id).then(data => {
+      friendsApi.agree(item).then(data => {
         item.status = 1;
       });
     },
     // 拒绝添加
     refuseFriends(item) {
-      friendsApi.refuseFriends(item.id).then(data => {
+      friendsApi.refuseFriends(item).then(data => {
         item.status = 3;
       });
     },

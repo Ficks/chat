@@ -62,10 +62,10 @@
     <!-- 底部 -->
     <div class="fixbom">
       <mu-bottom-nav :value.sync="shift" shift>
-        <mu-bottom-nav-item to="message" value="movies" title="Chat" icon="ondemand_video"></mu-bottom-nav-item>
-        <mu-bottom-nav-item to="friends" value="books" title="通讯录" icon="books"></mu-bottom-nav-item>
-        <mu-bottom-nav-item to="find" value="music" title="发现" icon="music_note"></mu-bottom-nav-item>
-        <mu-bottom-nav-item to="world" value="pictures" title="世界" icon="photo"></mu-bottom-nav-item>
+        <mu-bottom-nav-item to="message" value="message" title="Chat" icon="ondemand_video"></mu-bottom-nav-item>
+        <mu-bottom-nav-item to="friends" value="friends" title="通讯录" icon="books"></mu-bottom-nav-item>
+        <mu-bottom-nav-item to="find" value="find" title="发现" icon="music_note"></mu-bottom-nav-item>
+        <mu-bottom-nav-item to="world" value="world" title="世界" icon="photo"></mu-bottom-nav-item>
       </mu-bottom-nav>
     </div>
 
@@ -86,7 +86,7 @@ export default {
   },
   data() {
     return {
-      shift: "movies",
+      shift: "message",
       docked: false,
       openDrawer: false,
       position: "left",
@@ -99,9 +99,10 @@ export default {
       this.$router.push({ path: "/login" });
     }
   },
-  mounted() {
-    console.log(this.userInfo);
-  }
+  created() {
+    this.shift = this.$route.name;
+  },
+  mounted() {}
 };
 </script>
 <style lang="less" scoped>

@@ -20,7 +20,7 @@ export default {
         return http({
             url: '/refuseFriends',
             tips: true,
-            data: { id: data }
+            data: data
         })
     },
     // 获取申请添加好友列表
@@ -32,18 +32,18 @@ export default {
         })
     },
     // 同意对方添加好友请求
-    agree(id) {
+    agree(data) {
         return http({
             url: '/agree',
-            data: { id },
+            data,
             tips: true
         })
     },
     // 删除好友
-    deleteFriends(id) {
+    deleteFriends(data) {
         return http({
             url: '/deleteFriends',
-            data: { id },
+            data,
             tips: true
         })
     },

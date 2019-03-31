@@ -1,11 +1,11 @@
 <template>
   <div class="container_c">
     <mu-appbar style="width: 100%;" color="primary">
-      <mu-button icon slot="left" @click="$router.back(-1)">
+      <mu-button icon slot="left" @click="$router.goBack">
         <i class="iconfont icon-back"></i>
       </mu-button>
       Ficks
-      <mu-button icon slot="right" @click="$router.back(-1)">
+      <mu-button icon slot="right" @click="$router.goBack">
         <i class="iconfont icon-gengduo"></i>
       </mu-button>
     </mu-appbar>
@@ -137,10 +137,16 @@ body {
 </style>
 
 <style lang="less" scoped>
+.container_c {
+  padding-top: 56px;
+  padding-bottom: 45px;
+  box-sizing: border-box;
+}
 .chatRecord {
+  height: 100%;
   .list {
     display: flex;
-    margin-top: 20px;
+    padding-top: 20px;
     .headImg {
       margin-right: 15px;
       margin-left: 15px;

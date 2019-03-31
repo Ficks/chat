@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { mapActions, mapMutations } from "vuex";
 import loginApi from "@/api/login";
 export default {
   Name: "登录",
@@ -57,6 +58,8 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["onSocket"]),
+    ...mapMutations(["setToken", "setUserInfo"]),
     submit() {
       this.$refs.form.validate().then(result => {
         if (result) {
@@ -70,16 +73,17 @@ export default {
         data.userInfo.sysPath = "http://192.168.1.221:3000";
         sessionStorage.userInfo = JSON.stringify(data.userInfo);
         sessionStorage.token = data.token;
-        this.$store.commit("setToken", data.token);
-        this.$store.commit("setUserInfo", data.userInfo);
+        this.setToken(data.token);
+        this.setUserInfo(data.userInfo);
+        this.onSocket();
         this.$router.push("/");
       });
     }
   },
   created() {
     sessionStorage.token = sessionStorage.userInfo = "";
-    this.$store.commit("setToken", "");
-    this.$store.commit("setUserInfo", {});
+    this.setToken("");
+    this.setUserInfo({});
   }
 };
 </script>

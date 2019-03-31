@@ -1,11 +1,11 @@
 <template>
   <div class="container_c">
     <mu-appbar style="width: 100%;" color="secondary">
-      <mu-button icon slot="left" @click="$router.back(-1)">
+      <mu-button icon slot="left" @click="$router.goBack">
         <i class="iconfont icon-back"></i>
       </mu-button>
-        找回密码
-      </mu-appbar>
+      找回密码
+    </mu-appbar>
     <mu-container class="form">
       <mu-form ref="form" :model="validateForm" class="mu-demo-form">
         <mu-form-item label="手机号" prop="tel" :rules="telRules">
@@ -13,7 +13,7 @@
         </mu-form-item>
         <mu-form-item label="图形验证码" prop="imgCode" :rules="imgCodeRules" class="imgcode">
           <mu-text-field v-model="validateForm.imgCode" prop="imgCode"></mu-text-field>
-          <mu-button flat class="imgcode_btn" v-html="imgCode"  @click="getImgCode"></mu-button>
+          <mu-button flat class="imgcode_btn" v-html="imgCode" @click="getImgCode"></mu-button>
         </mu-form-item>
 
         <mu-form-item label="短信验证码" prop="smsCode" :rules="smsCodeRules" class="imgcode">
@@ -22,20 +22,19 @@
         </mu-form-item>
 
         <mu-form-item label="密码" prop="pwd" :rules="pwdRules">
-            <mu-text-field type="password" :type="showPwd?'text':'password'" v-model="validateForm.pwd" :action-icon="showPwd?'visibility_off':'visibility'" :action-click="()=>showPwd=!showPwd" prop="pwd"></mu-text-field>
+          <mu-text-field type="password" :type="showPwd?'text':'password'" v-model="validateForm.pwd" :action-icon="showPwd?'visibility_off':'visibility'" :action-click="()=>showPwd=!showPwd" prop="pwd"></mu-text-field>
         </mu-form-item>
         <mu-form-item label="确认密码" prop="qrPwd" :rules="qrPwdRules">
-            <mu-text-field type="password" :type="showQrPwd?'text':'password'" v-model="validateForm.qrPwd" :action-icon="showQrPwd?'visibility_off':'visibility'" :action-click="()=>showQrPwd=!showQrPwd" prop="qrPwd"></mu-text-field>
+          <mu-text-field type="password" :type="showQrPwd?'text':'password'" v-model="validateForm.qrPwd" :action-icon="showQrPwd?'visibility_off':'visibility'" :action-click="()=>showQrPwd=!showQrPwd" prop="qrPwd"></mu-text-field>
         </mu-form-item>
         <div class="submit">
-          <mu-button large full-width  color="secondary" @click="submit">找回密码</mu-button>
+          <mu-button large full-width color="secondary" @click="submit">找回密码</mu-button>
         </div>
         <div class="center">
           <mu-button flat to="/login">去登录</mu-button>
         </div>
       </mu-form>
     </mu-container>
-
 
   </div>
 </template>
