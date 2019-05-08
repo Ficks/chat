@@ -34,7 +34,7 @@ const socket = function (app) {
     //     const { data } = context;
     //     // type 0-拒绝  1-同意 2-删除 3-加入黑名单
     //     console.log("拒绝好友添加")
-    //     let id = data.aId == data.userId ? data.aId : data.bId;
+    //     let id = data.aTel == data.userId ? data.aTel : data.bTel;
     //     console.log("onFriends" + id);
     //     io.broadcast("onFriends" + id, {
     //         msg: data.nickName + onFriendStatus(data.isType),

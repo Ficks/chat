@@ -14,7 +14,7 @@
       <mu-load-more @refresh="refresh" :refreshing="searchLoad.refreshing" :loading="searchLoad.loading" @load="load">
         <mu-paper :z-depth="1" class="demo-list-wrap">
 
-          <mu-list v-for="(item,index) in listArr" :key="index" @click="openWin({name:'friendsInfo',query:{id:item.userId}})">
+          <mu-list v-for="(item,index) in listArr" :key="index" @click="openWin({name:'friendsInfo',query:{tel:item.userTel}})">
             <mu-list-item avatar button :ripple="false">
               <mu-list-item-action>
                 <mu-avatar>
@@ -23,7 +23,7 @@
               </mu-list-item-action>
               <mu-list-item-title>{{item.nickName}}</mu-list-item-title>
               <mu-list-item-action>
-                <div class="btns" v-if="item.status==2 && item.bId==userInfo.id">
+                <div class="btns" v-if="item.status==2 && item.bTel==userInfo.tel">
                   <mu-button @click.stop="onSubmit(item)" color="primary">接受</mu-button>
                   <mu-button @click.stop="refuseFriends(item)" color="error">拒绝</mu-button>
                 </div>
@@ -90,7 +90,7 @@ export default {
       } else if (item.status == 2) {
         return "等待验证";
       } else if (item.status == 3) {
-        if (item.aId == this.userInfo.id) {
+        if (item.aTel == this.userInfo.id) {
           return "被拒绝";
         } else {
           return "已拒绝";

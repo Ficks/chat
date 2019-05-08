@@ -26,8 +26,8 @@ export default {
     },
     // 监听好友添加状态
     onFriends() {
-      console.log("onFriends" + this.userInfo.id);
-      this.socket.on("onFriends" + this.userInfo.id, data => {
+      console.log("onFriends" + this.userInfo.tel);
+      this.socket.on("onFriends" + this.userInfo.tel, data => {
         if (data.type == 0) {
           this.$toast.error(data.msg);
         } else if (data.type == 2) {

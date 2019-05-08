@@ -19,15 +19,18 @@
         </mu-card-media>
       </mu-card>
 
-      <div class="btns" v-if="userData.id!=userInfo.id">
+      <div class="btns" v-if="userData.tel!=userInfo.tel">
         <template v-if="userData.status==1">
           <mu-button full-width large color="primary" @click="openWin({path:'/chat/'+userData.userId})">发送消息</mu-button>
           <mu-button full-width large color="error" @click="openSimpleDialog">删除好友</mu-button>
         </template>
 
-        <mu-button v-else-if="userData.status==2 && userData.aId==userInfo.id" full-width large color="success">等待对方验证</mu-button>
-        <mu-button v-else-if="userData.status==2 && userData.bId==userInfo.id" @click="agreeFriends" full-width large color="primary">同意好友请求</mu-button>
+        <mu-button v-else-if="userData.status==2 && userData.aTel==userInfo.tel" full-width large color="success" disabled>等待对方验证</mu-button>
+        <mu-button v-else-if="userData.status==2 && userData.bTel==userInfo.tel" @click="agreeFriends" full-width large color="primary">同意好友请求</mu-button>
         <mu-button v-else @click="addFriends" full-width large color="primary">添加到通讯录</mu-button>
+
+        <mu-button v-if="userData.status==2 && userData.bTel==userInfo.tel" @click="refuseFriends" full-width large color="error">拒绝好友请求</mu-button>
+
       </div>
     </mu-container>
 
@@ -50,7 +53,8 @@ export default {
       tel: "",
       id: "",
       userData: {},
-      openSimple: false
+      openSimple: false,
+      isNot: true //是否有过好友关系
     };
   },
   computed: {
@@ -74,22 +78,39 @@ export default {
         d = { tel: this.tel };
       }
       friendsApi.getFriendsGourp(d).then(data => {
-        console.log(data);
         this.userData = data.data;
       });
     },
     // 添加好友
     addFriends() {
-      let id = this.userData.userId;
-      friendsApi.addFriends(this.userData).then(data => {
-        this.userData.status = 2;
-      });
+      // 新建好友关系
+      if (this.isNot) {
+        friendsApi.addFriends(this.userData).then(data => {
+          if (this.userData.aTel) {
+            this.userData.status = 2;
+          } else {
+            this.onSearch();
+          }
+        });
+      } else {
+        // 申请恢复好友关系
+      }
     },
     // 同意对方添加好友
     agreeFriends() {
-      friendsApi.agree(this.userData.id).then(data => {
-        this.userData.status = 1;
-      });
+      friendsApi
+        .agree({ id: this.userData.id, tel: this.userData.tel })
+        .then(data => {
+          this.userData.status = 1;
+        });
+    },
+    // 拒绝添加
+    refuseFriends() {
+      friendsApi
+        .refuseFriends({ id: this.userData.id, tel: this.userData.tel })
+        .then(data => {
+          this.userData.status = 3;
+        });
     },
     // 删除好友
     deleteFriends() {

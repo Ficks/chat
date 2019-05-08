@@ -61,14 +61,13 @@ router.get('/getFriends', async ctx => {
 })
 
 
-// 查询好友关系   ------需要重写，如果是传的id直接修改id，否则就按手机号码添加为新的好友
+// 查询好友关系
 router.get('/getFriendsGourp', async ctx => {
     const { query } = ctx.request;
     const user = ctx.session.userInfo;
-    let sql = `select *,a.id as userId from user a,friends b where (b.aId=${query.id} and a.id=b.aId and b.bId=${user.id}) or (b.bId=${query.id}  and a.id=b.bId and b.aId=${user.id})`;
-    if (query.tel) {
-        sql = `select * from user a,friends b where (b.aId=a.id and a.tel=${query.tel} and b.bId=${user.id}) or (b.bId=a.id  and a.tel=${query.tel} and b.aId=${user.id})`;
-    }
+
+    let sql = `select * from user a,friends b where (b.aTel=a.tel and a.tel=${query.tel} and b.bTel=${user.tel}) or (b.bTel=a.tel  and a.tel=${query.tel} and b.aTel=${user.tel})`;
+
 
     let isNot = true;
     await mysql.query(sql).then(data => {
@@ -130,7 +129,7 @@ router.post('/addFriends', async ctx => {
     // status 0-不是好友关系 1-好友关系 2-等待对方同意 3-对方拒绝 4-黑名单
     let bUser = 0;
     // 查询是否好友关系
-    await searchFriends(body.id, aUser.id).then(data => {
+    await searchFriends(body.tel, aUser.tel).then(data => {
         if (data.length != 0 && data[0].isFriends != 0) {
             bUser = data[0];
         }
@@ -143,22 +142,33 @@ router.post('/addFriends', async ctx => {
 
     // 不是好友添加
     if (bUser == 0) {
-        await mysql.query(`INSERT INTO friends(aId,bId,status) VALUES(${aUser.id},${body.id}, 2)`).then(data => {
-            const user = ctx.session.userInfo;
-            let hiId = body.userId == body.aId ? body.aId : body.bId;
-            io.broadcast('onFriends' + hiId, {
-                msg: user.nickName + "向您发起了好友申请"
-            });
-            ctx.body = {
-                status: 1,
-                msg: "好友请求发送成功"
+        let g = await mysql.query('start transaction');
+        let addFriendsData = await mysql.query(`INSERT INTO friends(aTel,bTel,status) VALUES(${aUser.tel},${body.tel}, 2)`);
+        if (addFriendsData.affectedRows == 1) {
+            // 添加好友请求记录
+            let addFriendRecordData = await mysql.query(`INSERT INTO friendRecord(fId,aTel,bTel,status) VALUES(${addFriendsData.insertId},${aUser.tel},${body.tel}, 2)`)
+
+            if (addFriendRecordData.affectedRows == 1) {
+                await mysql.query('commit');
+                const user = ctx.session.userInfo;
+                let hiTel = body.tel;
+                io.broadcast('onFriends' + hiTel, {
+                    msg: user.nickName + "向您发起了好友申请"
+                });
+                ctx.body = {
+                    status: 1,
+                    msg: "好友请求发送成功"
+                }
+            } else {
+                rollBack(ctx, '添加失败');
             }
-        }).catch(err => {
-            ctx.body = {
-                status: -1,
-                msg: "添加失败"
-            }
-        })
+
+        } else {
+            rollBack(ctx, '添加失败');
+        }
+
+
+
     } else if (bUser.status == 1) {
         ctx.body = {
             status: 1,
@@ -170,23 +180,30 @@ router.post('/addFriends', async ctx => {
             msg: "请等待对方验证"
         }
     } else if (bUser.status == 0 || bUser.status == 3) {
-        // 如果是有记录，重新添加的时候重置两者id关系 aid为添加者 bid为接受者
-        await mysql.query(`update friends set status=2,aId=${aUser.id},bId=${body.id} where id=${bUser.id}`).then(data => {
-            const user = ctx.session.userInfo;
-            let hiId = body.userId == body.aId ? body.aId : body.bId;
-            io.broadcast('onFriends' + hiId, {
-                msg: user.nickName + "向您发起了好友申请"
-            });
-            ctx.body = {
-                status: 1,
-                msg: "好友请求发送成功"
+        // 如果是有记录，重新添加的时候重置两者关系 aTel为添加者 bTel为接受者
+
+        await mysql.query('start transaction');
+        let setFriends = await mysql.query(`update friends set status=2,aTel=${aUser.tel},bTel=${body.tel} where id=${bUser.id}`);
+        if (setFriends.affectedRows == 1) {
+            let addFriendRecordData = await mysql.query(`INSERT INTO friendRecord(fId,aTel,bTel,status) VALUES(${bUser.id},${aUser.tel},${body.tel}, 2)`)
+
+            if (addFriendRecordData.affectedRows == 1) {
+                await mysql.query('commit');
+                const user = ctx.session.userInfo;
+                let hiTel = body.tel;
+                io.broadcast('onFriends' + hiTel, {
+                    msg: user.nickName + "向您发起了好友申请"
+                });
+                ctx.body = {
+                    status: 1,
+                    msg: "好友请求发送成功"
+                }
+            } else {
+                rollBack(ctx, '添加失败');
             }
-        }).catch(err => {
-            ctx.body = {
-                status: -1,
-                msg: "添加失败"
-            }
-        })
+        } else {
+            rollBack(ctx, '添加失败');
+        }
 
     } else if (bUser.status == 4) {
         ctx.body = {
@@ -199,32 +216,42 @@ router.post('/addFriends', async ctx => {
 // 拒绝好友
 router.post('/refuseFriends', async ctx => {
     const { body } = ctx.request;
-    await mysql.query(`update friends set status=3 where id=${body.id}`).then(data => {
-        const user = ctx.session.userInfo;
-        let hiId = body.userId == body.aId ? body.aId : body.bId;
-        io.broadcast('onFriends' + hiId, {
-            type: 0,
-            msg: user.nickName + "拒绝了您的好友请求"
-        });
-        ctx.body = {
-            status: 1,
-            msg: "已拒绝"
+    await mysql.query('start transaction');
+    let data = await mysql.query(`update friends set status=3 where id=${body.id}`);
+    console.log(body.id);
+    if (data.affectedRows == 1) {
+        let upadteFriendRecordData = await mysql.query(`update friendRecord set status=3 where fId=${body.id} ORDER BY rId desc LIMIT 1`);
+        console.log(`update friendRecord set status=3 where fId=${body.id} ORDER BY rId desc LIMIT 1`)
+        console.log("删除记录")
+        console.log(upadteFriendRecordData);
+        if (upadteFriendRecordData.affectedRows == 1) {
+            const user = ctx.session.userInfo;
+            let hiTel = body.tel;
+            io.broadcast('onFriends' + hiTel, {
+                type: 0,
+                msg: user.nickName + "拒绝了您的好友请求"
+            });
+            ctx.body = {
+                status: 1,
+                msg: "已拒绝"
+            }
+        } else {
+            rollBack(ctx, '操作失败,请重新尝试');
         }
-    }).catch(err => {
-        ctx.body = {
-            status: -1,
-            msg: "请重新尝试此操作"
-        }
-    })
+    } else {
+        rollBack(ctx, '操作失败,请重新尝试');
+    }
+
 })
 
 // 获取好友申请列表
 router.get('/getAddFriendsList', async ctx => {
     const { query } = ctx.request;
-    // aid是添加者
-    // bid是接受者
-    // 如果b表的aid是访问者的话，那么就关联bid的user表数据返回
-    let sql = `select b.id,b.aId,b.bId,a.id as userId,a.headImg,a.nickName,b.status from user a,friends b where (b.aId=${query.id} and a.id=b.bId) or (b.bId=${query.id}  and a.id=b.aId) ORDER BY b.id desc limit ${(query.page - 1) * query.size},${query.size}`;
+    const { userInfo } = ctx.session;
+    // aTel是添加者
+    // bTel是接受者
+    // 如果b表的aTel是访问者的话，那么就关联bTel的user表数据返回
+    let sql = `select b.id,b.aTel,b.bTel,a.tel as userTel,a.headImg,a.nickName,b.status from user a,friends b where (b.aTel=${userInfo.tel} and a.tel=b.bTel) or (b.bTel=${userInfo.tel}  and a.tel=b.aTel) ORDER BY b.id desc limit ${(query.page - 1) * query.size},${query.size}`;
     await mysql.query(sql).then(data => {
         ctx.body = {
             status: 1,
@@ -244,8 +271,8 @@ router.post('/agree', async ctx => {
     const { body } = ctx.request;
     await mysql.query(`UPDATE friends SET status=1 where id=${body.id}`).then(data => {
         const user = ctx.session.userInfo;
-        let hiId = body.userId == body.aId ? body.aId : body.bId;
-        io.broadcast('onFriends' + hiId, {
+        let hiTel = body.tel;
+        io.broadcast('onFriends' + hiTel, {
             type: 1,
             msg: user.nickName + "同意了您的好友申请"
         });
@@ -282,7 +309,7 @@ router.post('/deleteFriends', async ctx => {
 router.get('/getFriendsList', async ctx => {
     const { query } = ctx.request;
     let user = ctx.session.userInfo;
-    let sql = `select b.id,a.id as userId,a.tel,a.nickName,a.headImg from user a,friends b where b.status=1 and ((b.aId=${user.id} and a.id=b.bId) or (b.bId=${user.id} and a.id=b.aId)) limit ${(query.page - 1) * query.size},${query.size}`
+    let sql = `select b.id,a.tel as userTel,a.tel,a.nickName,a.headImg from user a,friends b where b.status=1 and ((b.aTel=${user.tel} and a.tel=b.bTel) or (b.bTel=${user.tel} and a.tel=b.aTel)) limit ${(query.page - 1) * query.size},${query.size}`
     await mysql.query(sql).then(data => {
         ctx.body = {
             status: 1,
@@ -309,14 +336,25 @@ function searchUserId(tel) {
 }
 
 // 查询好友是否存在
-function searchFriends(id, uid) {
+function searchFriends(tel, uTel) {
     return new Promise((resolve, reject) => {
-        mysql.query(`select * from Friends where (aId=${id} and bId=${uid}) or (aId=${uid} and bId=${id})`).then(data => {
+        mysql.query(`select * from Friends where (aTel=${tel} and bTel=${uTel}) or (aTel=${uTel} and bTel=${tel})`).then(data => {
             resolve(data);
         }).catch(err => {
             reject(err);
         })
     })
 }
+
+
+// 事务回滚-
+function rollBack(ctx, msg) {
+    mysql.query('rollback');
+    ctx.body = {
+        status: -1,
+        msg: msg || "操作失败"
+    }
+}
+
 
 module.exports = router;
