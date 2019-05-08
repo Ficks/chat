@@ -21,7 +21,7 @@
 
       <div class="btns" v-if="userData.tel!=userInfo.tel">
         <template v-if="userData.status==1">
-          <mu-button full-width large color="primary" @click="openWin({path:'/chat/'+userData.userId})">发送消息</mu-button>
+          <mu-button full-width large color="primary" @click="openWin({path:'/chat/'+userData.tel})">发送消息</mu-button>
           <mu-button full-width large color="error" @click="openSimpleDialog">删除好友</mu-button>
         </template>
 

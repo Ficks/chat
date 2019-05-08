@@ -122,7 +122,7 @@
             <mu-sub-header>好友</mu-sub-header>
             <p class="tips" v-if="listArr.length==0">暂无好友</p>
             <div v-for="item,index in listArr" :key="index">
-              <mu-list-item avatar button @click="openWin({name:'friendsInfo',query:{tel:item.userTel}})">
+              <mu-list-item avatar button @click="openWin({name:'friendsInfo',query:{tel:item.tel}})">
                 <mu-list-item-action>
                   <mu-avatar>
                     <img :src="userInfo.sysPath+item.headImg">
