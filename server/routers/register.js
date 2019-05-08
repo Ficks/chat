@@ -54,7 +54,8 @@ router.post('/register', async ctx => {
         ctx.body = { status: -1, msg: "注册失败" }
     })
     if (isReg) return;
-    let addSql = `INSERT INTO user(tel,pwd,nickName,headImg) VALUES(${body.tel},${body.pwd},${body.tel},'/headImg/defaultHeadImg.jpg')`;
+    let createTime = new Date().getTime();
+    let addSql = `INSERT INTO user(tel,pwd,nickName,headImg,createTime) VALUES(${body.tel},${body.pwd},${body.tel},'/headImg/defaultHeadImg.jpg',${createTime})`;
     await mysql.query(addSql).then(data => {
         ctx.body = { status: 1, msg: "注册成功" }
     }).catch(err => {

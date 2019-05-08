@@ -38,6 +38,7 @@
                 </mu-avatar>
               </mu-list-item-action>
               <mu-list-item-title>新的朋友</mu-list-item-title>
+              <mu-badge v-show="newFriendsMsgLen>0" :content="newFriendsMsgLen" color="primary"></mu-badge>
             </mu-list-item>
             <mu-list-item avatar button>
               <mu-list-item-action>
@@ -143,13 +144,14 @@
 
 <script>
 import friendsApi from "@/api/friends";
-import { mapGetters } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import listArr from "@/mixins/listArr";
 import common from "@/mixins/common";
 export default {
   mixins: [common, listArr],
   computed: {
-    ...mapGetters(["userInfo"])
+    ...mapGetters(["userInfo"]),
+    ...mapState(["newFriendsMsgLen"])
   },
   data() {
     return {

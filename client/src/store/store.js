@@ -6,7 +6,8 @@ export default new Vuex.Store({
   state: {
     token: "",
     userInfo: {},
-    socket: null
+    socket: null,
+    newFriendsMsgLen: '0',//新好友通知数量
   },
   getters: {
     token: state => {
@@ -41,6 +42,10 @@ export default new Vuex.Store({
           id: state.userInfo.tel
         });
       });
+    },
+    // 设置新好友通知数量
+    setNewFriendsMsgLen(state, num) {
+      state.newFriendsMsgLen = String(num);
     }
   },
   actions: {

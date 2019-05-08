@@ -14,7 +14,7 @@
       <mu-load-more @refresh="refresh" :refreshing="searchLoad.refreshing" :loading="searchLoad.loading" @load="load">
         <mu-paper :z-depth="1" class="demo-list-wrap">
 
-          <mu-list v-for="(item,index) in listArr" :key="index" @click="openWin({name:'friendsInfo',query:{tel:item.userTel}})">
+          <mu-list v-for="(item,index) in listArr" :key="index" @click="openWin({name:'friendsInfo',query:{tel:item.tel}})">
             <mu-list-item avatar button :ripple="false">
               <mu-list-item-action>
                 <mu-avatar>
@@ -45,7 +45,7 @@
 
 <script>
 import friendsApi from "@/api/friends";
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import common from "@/mixins/common";
 import listArr from "@/mixins/listArr";
 export default {
@@ -57,6 +57,7 @@ export default {
     return {};
   },
   methods: {
+    ...mapMutations(["setNewFriendsMsgLen"]),
     //   查询好友申请列表
     getList() {
       let d = { id: this.userInfo.id };
@@ -82,7 +83,6 @@ export default {
     },
     // 过滤器
     statusMsg(item) {
-      console.log(item.status);
       if (item.status == 0) {
         return "已解除好友关系";
       } else if (item.status == 1) {
@@ -90,7 +90,7 @@ export default {
       } else if (item.status == 2) {
         return "等待验证";
       } else if (item.status == 3) {
-        if (item.aTel == this.userInfo.id) {
+        if (item.aTel == this.userInfo.tel) {
           return "被拒绝";
         } else {
           return "已拒绝";
@@ -99,10 +99,18 @@ export default {
       } else if (item.status == 4) {
         return "黑名单";
       }
+    },
+    // 设置所有消息为已读
+    setAllMsgRead() {
+      friendsApi.getFriendsAllMsgRead().then(data => {
+        this.setNewFriendsMsgLen(0);
+      });
     }
   },
   created() {},
-  mounted() {}
+  mounted() {
+    this.setAllMsgRead();
+  }
 };
 </script>
 <style lang="less" scoped>

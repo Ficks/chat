@@ -31,6 +31,22 @@ export default {
             data
         })
     },
+    // 获取申请添加好友未读信息条数
+    getFriendsMsg(data) {
+        return http({
+            url: '/getFriendsMsg',
+            type: 'get',
+            data
+        })
+    },
+    // 设置所有申请信息为已读
+    getFriendsAllMsgRead(data) {
+        return http({
+            url: '/getFriendsAllMsgRead',
+            type: 'post',
+            data
+        })
+    },
     // 同意对方添加好友请求
     agree(data) {
         return http({

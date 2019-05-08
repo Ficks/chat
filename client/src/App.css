@@ -51,8 +51,6 @@ svg {
   justify-content: center;
 }
 .pad_box_wr {
-  padding-top: 56px;
-  padding-bottom: 56px;
   box-sizing: border-box;
   height: 100%;
 }

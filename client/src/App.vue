@@ -5,7 +5,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
+import friendsApi from "@/api/friends";
 export default {
   name: "App",
   data() {
@@ -16,11 +17,11 @@ export default {
   },
   methods: {
     ...mapActions(["onSocket"]),
+    ...mapMutations(["setNewFriendsMsgLen"]),
     // 连接socket
     conncet() {
       if (this.token && !this.socket) {
         this.onSocket();
-        console.log("丢你");
         this.onFriends();
       }
     },
@@ -28,6 +29,7 @@ export default {
     onFriends() {
       console.log("onFriends" + this.userInfo.tel);
       this.socket.on("onFriends" + this.userInfo.tel, data => {
+        this.getFriendsMsg();
         if (data.type == 0) {
           this.$toast.error(data.msg);
         } else if (data.type == 2) {
@@ -36,10 +38,17 @@ export default {
           this.$toast.message(data.msg);
         }
       });
+    },
+    // 获取新好友通知条数
+    getFriendsMsg() {
+      friendsApi.getFriendsMsg().then(data => {
+        this.setNewFriendsMsgLen(data.length);
+      });
     }
   },
   created() {
     this.conncet();
+    this.getFriendsMsg();
   }
 };
 </script>
