@@ -9,7 +9,7 @@
     <mu-container class="form">
       <mu-form ref="form" :model="validateForm" class="mu-demo-form">
         <mu-form-item label="手机号" prop="tel" :rules="telRules">
-          <mu-text-field v-model="validateForm.tel" prop="tel"></mu-text-field>
+          <mu-text-field type="tel" v-model="validateForm.tel" prop="tel"></mu-text-field>
         </mu-form-item>
         <mu-form-item label="密码" prop="pwd" :rules="pwdRules">
           <mu-text-field type="password" :type="showPwd?'text':'password'" v-model="validateForm.pwd" :action-icon="showPwd?'visibility_off':'visibility'" :action-click="()=>showPwd=!showPwd" prop="pwd"></mu-text-field>

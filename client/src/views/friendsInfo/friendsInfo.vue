@@ -44,7 +44,7 @@
 
 <script>
 import friendsApi from "@/api/friends";
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import common from "@/mixins/common";
 export default {
   mixins: [common],
@@ -58,7 +58,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["userInfo"])
+    ...mapGetters(["userInfo"]),
+    ...mapState(["updateHyStatus"])
   },
   created() {
     // 判断是用id还是tel查找
@@ -79,6 +80,8 @@ export default {
       }
       friendsApi.getFriendsGourp(d).then(data => {
         this.userData = data.data;
+        console.log("是否好友");
+        console.log(this.userData);
       });
     },
     // 添加好友
@@ -124,6 +127,12 @@ export default {
     },
     closeSimpleDialog() {
       this.openSimple = false;
+    }
+  },
+  watch: {
+    // 检测到好友关系发生变化更新状态
+    updateHyStatus() {
+      this.onSearch();
     }
   }
 };

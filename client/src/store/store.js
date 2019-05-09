@@ -8,6 +8,7 @@ export default new Vuex.Store({
     userInfo: {},
     socket: null,
     newFriendsMsgLen: '0',//新好友通知数量
+    updateHyStatus: 0,//好友状态发生改变
   },
   getters: {
     token: state => {
@@ -46,6 +47,10 @@ export default new Vuex.Store({
     // 设置新好友通知数量
     setNewFriendsMsgLen(state, num) {
       state.newFriendsMsgLen = String(num);
+    },
+    // 好友状态发生改变
+    updateHyStatus(state) {
+      state.updateHyStatus++;
     }
   },
   actions: {

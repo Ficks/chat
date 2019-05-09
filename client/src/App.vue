@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     ...mapActions(["onSocket"]),
-    ...mapMutations(["setNewFriendsMsgLen"]),
+    ...mapMutations(["setNewFriendsMsgLen", "updateHyStatus"]),
     // 连接socket
     conncet() {
       if (this.token && !this.socket) {
@@ -30,6 +30,7 @@ export default {
       console.log("onFriends" + this.userInfo.tel);
       this.socket.on("onFriends" + this.userInfo.tel, data => {
         this.getFriendsMsg();
+        this.updateHyStatus();
         if (data.type == 0) {
           this.$toast.error(data.msg);
         } else if (data.type == 2) {

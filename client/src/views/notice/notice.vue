@@ -45,13 +45,14 @@
 
 <script>
 import friendsApi from "@/api/friends";
-import { mapGetters, mapMutations } from "vuex";
+import { mapState, mapGetters, mapMutations } from "vuex";
 import common from "@/mixins/common";
 import listArr from "@/mixins/listArr";
 export default {
   mixins: [common, listArr],
   computed: {
-    ...mapGetters(["userInfo", "socket"])
+    ...mapGetters(["userInfo", "socket"]),
+    ...mapState(["updateHyStatus"])
   },
   data() {
     return {};
@@ -66,6 +67,11 @@ export default {
         .getAddFriendsList(d)
         .then(data => {
           this.afterGetList(data);
+          // 所有消息已读
+          this.setAllMsgRead();
+          for (let i = 0; i < this.listArr.length; i++) {
+            console.log(this.listArr[i].status);
+          }
         })
         .catch(err => {});
     },
@@ -107,10 +113,13 @@ export default {
       });
     }
   },
-  created() {},
-  mounted() {
-    this.setAllMsgRead();
-  }
+  watch: {
+    updateHyStatus() {
+      this.$refs.container.scrollTop = 0; //必须设置父组件的ref
+      this.init();
+    }
+  },
+  created() {}
 };
 </script>
 <style lang="less" scoped>

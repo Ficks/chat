@@ -143,7 +143,6 @@ router.post('/addFriends', async ctx => {
     // 不是好友添加
     if (bUser == 0) {
         await mysql.query('start transaction');
-        console.log(`INSERT INTO friends(aTel,bTel,status,createTime) VALUES(${aUser.tel},${body.tel}, 2,${createTime})`)
         let addFriendsData = await mysql.query(`INSERT INTO friends(aTel,bTel,status,createTime) VALUES(${aUser.tel},${body.tel}, 2,${createTime})`);
         if (addFriendsData.affectedRows == 1) {
             // 添加好友请求记录
@@ -223,7 +222,7 @@ router.post('/refuseFriends', async ctx => {
     if (data.affectedRows == 1) {
         let upadteFriendRecordData = await mysql.query(`update friendRecord set status=3,aIsRead=0,bIsRead=1,updateTime=${updateTime} where fId=${body.id} ORDER BY rId desc LIMIT 1`);
         if (upadteFriendRecordData.affectedRows == 1) {
-            mysql.query('commit');
+            await mysql.query('commit');
             const user = ctx.session.userInfo;
             let hiTel = body.tel;
             io.broadcast('onFriends' + hiTel, {
@@ -250,7 +249,7 @@ router.get('/getAddFriendsList', async ctx => {
     // aTel是添加者
     // bTel是接受者
     // 如果b表的aTel是访问者的话，那么就关联bTel的user表数据返回
-    let sql = `select b.fId as id,b.aTel,b.bTel,a.tel,a.headImg,a.nickName,b.status from user a,friendRecord b where (b.aTel=${userInfo.tel} and a.tel=b.bTel) or (b.bTel=${userInfo.tel}  and a.tel=b.aTel) ORDER BY b.updateTime desc limit ${(query.page - 1) * query.size},${query.size}`;
+    let sql = `select b.fId as id,b.rId,b.aTel,b.bTel,a.tel,a.headImg,a.nickName,b.status from user a,friendRecord b where (b.aTel=${userInfo.tel} and a.tel=b.bTel) or (b.bTel=${userInfo.tel}  and a.tel=b.aTel) ORDER BY rId desc limit ${(query.page - 1) * query.size},${query.size}`;
     await mysql.query(sql).then(data => {
         ctx.body = {
             status: 1,
@@ -269,7 +268,6 @@ router.get('/getAddFriendsList', async ctx => {
 router.get('/getFriendsMsg', async ctx => {
     const { userInfo } = ctx.session;
     let sql = `select * from friendRecord where (aTel=${userInfo.tel} and aIsRead=0) or (bTel=${userInfo.tel} and bIsRead=0)`;
-    console.log(sql)
     let data = await mysql.query(sql);
     ctx.body = {
         status: 1,
@@ -296,6 +294,7 @@ router.post('/getFriendsAllMsgRead', async ctx => {
 router.post('/agree', async ctx => {
     const { body } = ctx.request;
     let updateTime = new Date().getTime();
+    await mysql.query('start transaction');
     let data = await mysql.query(`UPDATE friends SET status=1,updateTime=${updateTime} where id=${body.id}`);
     if (data.affectedRows == 1) {
         let jData = await mysql.query(`UPDATE friendRecord SET status=1,aIsRead=0,bIsRead=1,updateTime=${updateTime} where fId=${body.id} order by rId desc limit 1`);
