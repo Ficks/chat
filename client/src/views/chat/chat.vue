@@ -12,7 +12,7 @@
 
     <div class="chatRecord">
 
-      <div :class="{my:userInfo.tel==item.tel}" class="list" v-for="(item,index) in chatList" :key="index">
+      <div :class="{my:userInfo.tel==item.userTel}" class="list" v-for="(item,index) in chatList" :key="index">
         <div class="headImg"><img src="@/assets/headImg.jpg" alt=""></div>
         <div class="mbox">
           <!-- <h3>Ficks</h3> -->
@@ -43,84 +43,93 @@
 import { mapGetters } from "vuex";
 export default {
   computed: {
-    ...mapGetters(["userInfo"])
+    ...mapGetters(["userInfo", "socket"])
   },
   data() {
     return {
       judgeDeviceType: {},
-      socket: null,
-      ta: {
-        tel: 15111327689,
+      // socket: null,
+      toUser: {
+        tel: "",
         headImg: "../../assets/logo.jpg"
       },
       chatVal: "",
-      chatList: []
+      chatList: [],
+      searchData: {
+        page: 1,
+        size: 20
+      }
     };
   },
   methods: {
+    // 获取历史数据
+    getHistory() {
+      // 接收消息
+      this.socket.on("chatHistory" + this.userInfo.tel, data => {
+        console.log("历史消息");
+        console.log(data);
+        this.chatList = data.concat(this.chatList);
+      });
+    },
     // 发送消息
     sendMsg() {
       // 发送消息，这里可以用发送事件进行消息发送
       this.socket.emit("sendMsg", {
-        toTel: this.ta.tel,
-        tel: this.userInfo.tel,
+        toUserTel: this.toUser.tel,
+        userTel: this.userInfo.tel,
         msg: this.chatVal,
-        msgType: "text"
+        msgType: "1"
       });
 
       this.chatList.push({
-        toTel: this.ta.tel,
-        tel: this.userInfo.tel,
+        toUserTel: this.toUser.tel,
+        userTel: this.userInfo.tel,
         msg: this.chatVal,
-        msgType: "text"
+        msgType: "1"
       });
       this.chatVal = "";
     },
     // 接受消息
     getMsg() {
       // 接收消息
-      this.socket.on("user" + this.userInfo.tel, data => {
+      this.socket.on("chat" + this.userInfo.tel, data => {
         // 可以对数据进行渲染
+        console.error("您有新的消息");
         console.log(data);
         console.log(this.chatList);
         this.chatList.push(data);
       });
     },
-    //聊天的时候别人发来的消息通知  目前先不用
-    getAllMsg() {
-      this.socket.on("allmessage", function(data) {
-        // 接收所有人消息
-        console.log("所以人的消息");
-      });
-    },
     // 初始化聊天记录
     chatInt() {
-      if (this.userInfo.tel == 17620327669) {
-        this.ta.tel = 15111327689;
-        this.userInfo.headImg = "../../assets/logo.jpg";
-      } else {
-        this.ta.tel = 17620327669;
-        this.userInfo.headImg = "../../assets/headImg.jpg";
-      }
+      this.toUser.tel = this.$route.params.tel;
       // 建立连接
-      this.socket = io("http://localhost:3000");
+      // this.socket = io("http://127.0.0.1:3000");
+      this.getHistory();
+      this.getMsg();
+      this.socket.emit("chatHistory", {
+        userTel: this.userInfo.tel,
+        toUserTel: this.toUser.tel,
+        searchData: this.searchData
+      });
       // on表示接收
       // emit表示发送
-      this.socket.on("connect", () => {
-        console.log("连接上了");
-        // 登录，同步前后端信息
-        // 请求后端login接口，写入socketid
-        this.socket.emit("login", {
-          // 身份标识，可以是时间戳或者唯一id，最要用来回去socketid进行私聊
-          id: this.userInfo.tel
-        });
-      });
+
+      // this.socket.on("connect", () => {
+      //   // console.log("连接上了");
+      //   // 登录，同步前后端信息
+      //   // 请求后端login接口，写入socketid
+      //   this.socket.emit("login", {
+      //     // 身份标识，可以是时间戳或者唯一id，最要用来回去socketid进行私聊
+      //     id: this.userInfo.tel
+      //   });
+      // });
     },
     // 表示服务器断开连接了
     chatOut() {
       // 表示连接断开了
       this.socket.on("disconnect", function() {
-        console.log("聊天服务器断开了");
+        // console.log("聊天服务器断开了");
       });
     },
     // 监听输入框的软键盘弹起和收起事件
@@ -130,7 +139,7 @@ export default {
         $input.addEventListener(
           "focus",
           function() {
-            console.log("IOS 键盘弹起啦！");
+            // console.log("IOS 键盘弹起啦！");
             // IOS 键盘弹起后操作
           },
           false
@@ -138,7 +147,7 @@ export default {
 
         // IOS 键盘收起：IOS 点击输入框以外区域或点击收起按钮，输入框都会失去焦点，键盘会收起，
         $input.addEventListener("blur", () => {
-          console.log("IOS 键盘收起啦！");
+          // console.log("IOS 键盘收起啦！");
           // IOS 键盘收起后操作
           var wechatInfo = window.navigator.userAgent.match(
             /MicroMessenger\/([\d\.]+)/i
@@ -172,10 +181,10 @@ export default {
               document.documentElement.clientHeight ||
               document.body.clientHeight;
             if (originHeight < resizeHeight) {
-              console.log("Android 键盘收起啦！");
+              // console.log("Android 键盘收起啦！");
               // Android 键盘收起后操作
             } else {
-              console.log("Android 键盘弹起啦！");
+              // console.log("Android 键盘弹起啦！");
               // Android 键盘弹起后操作
             }
 
@@ -203,7 +212,6 @@ export default {
   },
   created() {
     this.chatInt();
-    this.getMsg();
     this.chatOut();
   },
   mounted() {
@@ -222,6 +230,8 @@ body {
   padding-top: 56px;
   padding-bottom: 45px;
   box-sizing: border-box;
+  background: #eee;
+  padding-bottom: 50px;
 }
 .chatRecord {
   height: 100%;

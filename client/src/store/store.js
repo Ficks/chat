@@ -56,7 +56,7 @@ export default new Vuex.Store({
   actions: {
     onSocket({ commit }) {
       // 建立连接
-      commit('setSocket', io("http://localhost:3000"));
+      commit('setSocket', io("http://127.0.0.1:3000"));
     }
   }
 });
