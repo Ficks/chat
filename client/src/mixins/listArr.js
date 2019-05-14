@@ -40,7 +40,7 @@ export default {
                 this.$toast.success('刷新成功');
             }
             this.searchLoad.refreshing = this.searchLoad.loading = false;
-            if (list.length == 0) this.searchLoad.not = true;
+            if (list.length < this.searchList.size) this.searchLoad.not = true;
         },
         // 刷新
         refresh() {

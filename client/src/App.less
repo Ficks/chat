@@ -32,9 +32,13 @@ html,
     height: 100%;
 }
 
-.mu-load-more {
+.pad_box_wr>.mu-load-more {
     height: 100%;
     overflow: auto;
+}
+
+.icon-tianjia {
+    font-size: 20px;
 }
 
 .mu-appbar {
@@ -63,7 +67,17 @@ svg {
 }
 
 .pad_box_wr {
-    // padding-bottom: 56px;
+    padding-bottom: 56px;
     box-sizing: border-box;
     height: 100%;
+}
+
+.mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .5);
+    z-index: 1000;
 }

@@ -2,7 +2,7 @@
   <div class="container_c" ref="container">
     <!-- 标题 -->
     <mu-appbar style="width: 100%;" color="primary">
-      <mu-button icon slot="left" @click="openDrawer=true">
+      <mu-button icon slot="left" @click="setOpenDrawer">
         <mu-icon value="menu"></mu-icon>
       </mu-button>
       {{$route.meta.title}}
@@ -173,7 +173,7 @@
   </div>
 </template>
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import common from "@/mixins/common";
 import listArr from "@/mixins/listArr";
 export default {
@@ -191,6 +191,7 @@ export default {
     };
   },
   methods: {
+    ...mapMutations(["setOpenDrawer"]),
     outLogin() {
       // 退出登录
       this.$router.push({ path: "/login" });

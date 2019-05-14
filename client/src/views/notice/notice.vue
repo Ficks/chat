@@ -119,10 +119,15 @@ export default {
       this.init();
     }
   },
-  created() {}
+  created() {
+    this.init();
+  }
 };
 </script>
 <style lang="less" scoped>
+.pad_box_wr{
+  padding-bottom: 0;
+}
 .btns {
   display: flex;
 

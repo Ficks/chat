@@ -2,7 +2,7 @@
   <div class="container_c" ref="container">
     <!-- 标题 -->
     <mu-appbar style="width: 100%;" color="primary">
-      <mu-button icon slot="left" @click="openDrawer=true">
+      <mu-button icon slot="left" @click="setOpenDrawer">
         <mu-icon value="menu"></mu-icon>
       </mu-button>
       {{$route.meta.title}}
@@ -144,7 +144,7 @@
 
 <script>
 import friendsApi from "@/api/friends";
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters, mapMutations } from "vuex";
 import listArr from "@/mixins/listArr";
 import common from "@/mixins/common";
 export default {
@@ -163,6 +163,7 @@ export default {
     };
   },
   methods: {
+    ...mapMutations(["setOpenDrawer"]),
     //   查询好友列表
     getList() {
       friendsApi

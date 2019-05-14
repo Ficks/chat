@@ -102,7 +102,7 @@ export default new Router({
           },
           component: resolve => require(['@/views/notice/notice'], resolve)
         }, {
-          path: '/chat/:tel',
+          path: '/chat',
           name: 'chat',
           meta: {
             title: '聊天'

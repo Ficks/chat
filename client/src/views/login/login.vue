@@ -28,6 +28,7 @@
 
 <script>
 import { mapActions, mapMutations } from "vuex";
+import Config from "@/config/config";
 import loginApi from "@/api/login";
 export default {
   Name: "登录",
@@ -70,7 +71,7 @@ export default {
     loginSubmit() {
       loginApi.login(this.validateForm).then(data => {
         document.title = data.userInfo.nickName;
-        data.userInfo.sysPath = "http://192.168.1.221:3000";
+        data.userInfo.sysPath = Config.baseUrl;
         sessionStorage.userInfo = JSON.stringify(data.userInfo);
         sessionStorage.token = data.token;
         this.setToken(data.token);

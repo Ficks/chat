@@ -4,6 +4,7 @@ import config from '@/config/config.js';
 import store from '../store/store.js'; //状态管理
 import Toast from 'muse-ui-toast';
 import router from '../router'
+
 Toast.config({
   position: 'top'
 })
@@ -19,7 +20,6 @@ export default params => {
   params.data = params.data || {};
 
   if (params.type == 'get') params.params = params.data;
-
 
   return new Promise((resolve, reject) => {
     //创建Axios实例，把基本的配置放进去

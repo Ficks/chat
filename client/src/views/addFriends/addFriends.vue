@@ -8,7 +8,7 @@
     </mu-appbar>
 
     <div class="search">
-      <mu-text-field v-model="tel" fullWidth label="UserName" label-float help-text="用户账号为手机号" :action-click="onSearch" action-icon="search" icon="account_circle"></mu-text-field>
+      <mu-text-field type="tel" v-model="tel" fullWidth label="UserName" label-float help-text="用户账号为手机号" :action-click="onSearch" action-icon="search" icon="account_circle"></mu-text-field>
     </div>
   </div>
 </template>

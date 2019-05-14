@@ -2,11 +2,11 @@
   <div class="container_c">
     <!-- 左侧菜单 -->
     <mu-container>
-      <mu-drawer :open.sync="openDrawer" :docked="docked" :right="position === 'right'">
+      <div class="mask" v-show="openDrawer" @click="setOpenDrawer"></div>
+      <mu-drawer :open.sync="openDrawer" :docked="docked" :right="position === 'right'" class="leftMenu">
         <div class="top">
           <div class="headimg">
-            <img v-if="userInfo.headImg" :src="userInfo.headImg" alt="">
-            <img v-else src="../../assets/headImg.jpg" alt="">
+            <img :src="userInfo.sysPath+userInfo.headImg" alt="">
           </div>
           <div class="nickname">{{userInfo.nickName}}</div>
         </div>
@@ -77,23 +77,24 @@
   </div>
 </template>
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState, mapMutations } from "vuex";
 import common from "@/mixins/common";
 export default {
   mixins: [common],
   computed: {
+    ...mapState(["openDrawer"]),
     ...mapGetters(["userInfo"])
   },
   data() {
     return {
       shift: "message",
-      docked: false,
-      openDrawer: false,
+      docked: true,
       position: "left",
       defaultHeadImg: "@/assets/headImg.jpg"
     };
   },
   methods: {
+    ...mapMutations(["setOpenDrawer"]),
     outLogin() {
       // 退出登录
       this.$router.push({ path: "/login" });
@@ -106,6 +107,9 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.leftMenu{
+  z-index: 9999;
+}
 .router {
   padding-bottom: 56px;
 }

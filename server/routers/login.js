@@ -4,9 +4,11 @@ const mysql = require('../mysql');
 const jwt = require('jsonwebtoken');
 
 router.post('/login', async ctx => {
+    console.log("访问成功了");
     const { body } = ctx.request;
     let data = await mysql.query(`select * from user where tel=${body.tel} and pwd=${body.pwd}`);
 
+    console.log(data);
     // 如果没有该账号
     if (data.length > 0) {
         let lastLoginTime = new Date().getTime();

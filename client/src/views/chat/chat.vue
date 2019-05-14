@@ -4,22 +4,24 @@
       <mu-button icon slot="left" @click="$router.goBack">
         <i class="iconfont icon-back"></i>
       </mu-button>
-      Ficks
+      {{toUser.nickName}}
       <mu-button icon slot="right" @click="$router.goBack">
         <i class="iconfont icon-gengduo"></i>
       </mu-button>
     </mu-appbar>
 
-    <div class="chatRecord">
-
-      <div :class="{my:userInfo.tel==item.userTel}" class="list" v-for="(item,index) in chatList" :key="index">
-        <div class="headImg"><img src="@/assets/headImg.jpg" alt=""></div>
-        <div class="mbox">
-          <!-- <h3>Ficks</h3> -->
-          <div class="text">{{item.msg}}</div>
+    <div class="chatRecord" ref="scrollMain">
+      <div class="box_chat" ref="scrollBox">
+        <div class="more" v-show="loading"><i class="iconfont icon-jiazai"></i>加载更多</div>
+        <div :class="{my:userInfo.tel==item.userTel}" class="list" v-for="(item,index) in chatList" :key="index">
+          <div class="headImg" v-if="userInfo.tel==item.userTel"><img :src="userInfo.sysPath+userInfo.headImg" alt=""></div>
+          <div class="headImg" v-else><img :src="userInfo.sysPath+toUser.headImg" alt=""></div>
+          <div class="mbox">
+            <!-- <h3>Ficks</h3> -->
+            <div class="text">{{item.msg}}</div>
+          </div>
         </div>
       </div>
-
     </div>
 
     <div class="chat_bom">
@@ -27,7 +29,7 @@
         <div class="btns">
           <span class="iconfont icon-smile"></span>
         </div>
-        <textarea ref="chatInput" v-model="chatVal" />
+        <textarea ref="chatInput" v-model="chatVal" v-on:keyup.enter="sendMsg" />
         <div class="btns w78" v-if="!chatVal">
               <span class="iconfont icon-smile"></span>
               <span class="iconfont icon-jiahao"></span>
@@ -47,29 +49,78 @@ export default {
   },
   data() {
     return {
+      isOne: true, //是否第一次请求历史记录
+      moreAll: false, //是否已加载所有聊天信息
       judgeDeviceType: {},
       // socket: null,
       toUser: {
         tel: "",
-        headImg: "../../assets/logo.jpg"
+        nickName: "",
+        headImg: ""
       },
       chatVal: "",
       chatList: [],
       searchData: {
         page: 1,
         size: 20
-      }
+      },
+      // 下拉加载
+      loading: false
     };
   },
   methods: {
     // 获取历史数据
     getHistory() {
       // 接收消息
-      this.socket.on("chatHistory" + this.userInfo.tel, data => {
+      this.socket.on("chatHistory", data => {
+        this.searchData.page++;
         console.log("历史消息");
         console.log(data);
+        // 加载完所有聊天记录
+        if (data.length < this.searchData.size) {
+          this.moreAll = true;
+        }
+        this.loading = false;
+        let scrollTop = this.$refs.scrollBox.clientHeight; //记录获取数据前的高度
         this.chatList = data.concat(this.chatList);
+        if (this.isOne) {
+          this.scrollBom();
+          setTimeout(() => {
+            this.isOne = false;
+          }, 200);
+        } else {
+          this.$nextTick(() => {
+            this.$refs.scrollMain.scrollTop =
+              this.$refs.scrollBox.clientHeight - (scrollTop + 50);
+          });
+        }
       });
+    },
+    // 初次进入页面后滑动到最底部
+    scrollBom() {
+      this.$nextTick(() => {
+        this.$refs.scrollMain.scrollTop = this.$refs.scrollBox.clientHeight;
+      });
+    },
+    // 滚动条滚动的时候
+    onScroll() {
+      if (
+        this.$refs.scrollMain.scrollTop <= 50 &&
+        !this.loading &&
+        !this.isOne &&
+        !this.moreAll
+      ) {
+        this.loading = true;
+
+        setTimeout(() => {
+          this.socket.emit("chatHistory", {
+            userTel: this.userInfo.tel,
+            toUserTel: this.toUser.tel,
+            searchData: this.searchData
+          });
+          this.loading = false;
+        }, 200);
+      }
     },
     // 发送消息
     sendMsg() {
@@ -88,42 +139,40 @@ export default {
         msgType: "1"
       });
       this.chatVal = "";
+      this.scrollBom();
+      this.$refs.chatInput.style.height = "35px";
     },
     // 接受消息
     getMsg() {
       // 接收消息
-      this.socket.on("chat" + this.userInfo.tel, data => {
+      this.socket.on("chat", data => {
         // 可以对数据进行渲染
-        console.error("您有新的消息");
-        console.log(data);
-        console.log(this.chatList);
+
         this.chatList.push(data);
+        console.log(
+          this.$refs.scrollMain.scrollTop,
+          this.$refs.scrollBox.clientHeight - 100
+        );
+        // 如果在可视区域则滑动到新的消息哪里
+        if (
+          this.$refs.scrollMain.scrollTop +
+            this.$refs.scrollMain.clientHeight >=
+          this.$refs.scrollBox.clientHeight - 100
+        ) {
+          this.scrollBom();
+        }
       });
     },
     // 初始化聊天记录
     chatInt() {
-      this.toUser.tel = this.$route.params.tel;
-      // 建立连接
-      // this.socket = io("http://127.0.0.1:3000");
-      this.getHistory();
+      this.toUser = this.$route.query;
       this.getMsg();
+      this.getHistory();
       this.socket.emit("chatHistory", {
         userTel: this.userInfo.tel,
         toUserTel: this.toUser.tel,
         searchData: this.searchData
       });
-      // on表示接收
-      // emit表示发送
-
-      // this.socket.on("connect", () => {
-      //   // console.log("连接上了");
-      //   // 登录，同步前后端信息
-      //   // 请求后端login接口，写入socketid
-      //   this.socket.emit("login", {
-      //     // 身份标识，可以是时间戳或者唯一id，最要用来回去socketid进行私聊
-      //     id: this.userInfo.tel
-      //   });
-      // });
     },
     // 表示服务器断开连接了
     chatOut() {
@@ -208,14 +257,90 @@ export default {
       })();
 
       this.listenKeybord(this.$refs.chatInput);
+      this.autoTextArea(this.$refs.chatInput);
+    },
+    autoTextArea(elem, extra, maxHeight) {
+      extra = extra || 0;
+      var isFirefox = !!document.getBoxObjectFor || "mozInnerScreenX" in window,
+        isOpera = !!window.opera && !!window.opera.toString().indexOf("Opera"),
+        addEvent = function(type, callback) {
+          elem.addEventListener
+            ? elem.addEventListener(type, callback, false)
+            : elem.attachEvent("on" + type, callback);
+        },
+        getStyle = elem.currentStyle
+          ? function(name) {
+              var val = elem.currentStyle[name];
+
+              if (name === "height" && val.search(/px/i) !== 1) {
+                var rect = elem.getBoundingClientRect();
+                return (
+                  rect.bottom -
+                  rect.top -
+                  parseFloat(getStyle("paddingTop")) -
+                  parseFloat(getStyle("paddingBottom")) +
+                  "px"
+                );
+              }
+
+              return val;
+            }
+          : function(name) {
+              return getComputedStyle(elem, null)[name];
+            },
+        minHeight = parseFloat(getStyle("height"));
+
+      elem.style.resize = "none";
+
+      var change = function() {
+        var scrollTop,
+          height,
+          padding = 0,
+          style = elem.style;
+
+        if (elem._length === elem.value.length) return;
+        elem._length = elem.value.length;
+
+        if (!isFirefox && !isOpera) {
+          padding =
+            parseInt(getStyle("paddingTop")) +
+            parseInt(getStyle("paddingBottom"));
+        }
+        scrollTop =
+          document.body.scrollTop || document.documentElement.scrollTop;
+
+        elem.style.height = minHeight + "px";
+        if (elem.scrollHeight > minHeight) {
+          if (maxHeight && elem.scrollHeight > maxHeight) {
+            height = maxHeight - padding;
+            style.overflowY = "auto";
+          } else {
+            height = elem.scrollHeight - padding;
+            style.overflowY = "hidden";
+          }
+          style.height = height + extra + "px";
+          scrollTop += parseInt(style.height) - elem.currHeight;
+          document.body.scrollTop = scrollTop;
+          document.documentElement.scrollTop = scrollTop;
+          elem.currHeight = parseInt(style.height);
+        }
+      };
+
+      addEvent("propertychange", change);
+      addEvent("input", change);
+      addEvent("focus", change);
+      change();
     }
   },
-  created() {
-    this.chatInt();
-    this.chatOut();
-  },
   mounted() {
-    this.getXt();
+    this.$nextTick(() => {
+      console.log(999);
+      console.log(999);
+      this.chatInt();
+      this.chatOut();
+      this.getXt();
+      this.$refs.scrollMain.addEventListener("scroll", this.onScroll, false);
+    });
   }
 };
 </script>
@@ -226,15 +351,52 @@ body {
 </style>
 
 <style lang="less" scoped>
+.container{
+  padding: 0;
+  height: 100%;
+}
+
+.mu-load-more{
+  overflow: hidden;
+}
 .container_c {
-  padding-top: 56px;
-  padding-bottom: 45px;
+  // padding-top: 56px;
+  padding-bottom: 45px !important;
   box-sizing: border-box;
   background: #eee;
   padding-bottom: 50px;
+  overflow: hidden;
+}
+
+.more{
+  text-align: center;
+  color: #999;
+  padding: 10px 0;
+  i{
+    animation: rotatemore 1s linear infinite;
+    display: inline-block;
+    color: #999;
+  }
+}
+
+@keyframes rotatemore {
+  form{
+    transform: rotate(0deg);
+  }
+  to{
+    transform: rotate(360deg);
+  }
 }
 .chatRecord {
   height: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  -webkit-transition: all 0.2s cubic-bezier(0.55, 0, 0.1, 1);
+  transition: all 0.2s cubic-bezier(0.55, 0, 0.1, 1);
+
+  .box_chat{
+    padding-bottom: 20px;
+  }
   .list {
     display: flex;
     padding-top: 20px;
@@ -276,20 +438,25 @@ body {
   width: 100%;
 
   .chat_box {
-    height: 45px;
+    min-height: 45px;
+    max-height: 90px;
+    padding: 5px 0;
     border-top: 1px solid #ccc;
     display: flex;
     align-items: center;
     background: #e1e1e1;
 
     textarea {
+      min-height: 35px;
       height: 35px;
+      max-height: 80px;
       border: 0;
       flex: 1;
       border-radius: 4px;
-      padding: 10px;
       outline: none;
       box-sizing: border-box;
+      overflow-y: auto !important;
+      padding: 8px 6px;
     }
     .send_btn {
       box-sizing: border-box;

@@ -21,7 +21,7 @@
 
       <div class="btns" v-if="userData.tel!=userInfo.tel">
         <template v-if="userData.status==1">
-          <mu-button full-width large color="primary" @click="openWin({path:'/chat/'+userData.tel})">发送消息</mu-button>
+          <mu-button full-width large color="primary" @click="$router.push({path:'/chat',query:{tel:userData.tel,nickName:userData.nickName,headImg:userData.headImg}})">发送消息</mu-button>
           <mu-button full-width large color="error" @click="openSimpleDialog">删除好友</mu-button>
         </template>
 
@@ -62,26 +62,15 @@ export default {
     ...mapState(["updateHyStatus"])
   },
   created() {
-    // 判断是用id还是tel查找
-    if (this.$route.query.id) {
-      this.id = this.$route.query.id;
-      this.onSearch();
-    } else {
-      this.tel = this.$route.query.tel;
-      this.onSearch();
-    }
+    this.tel = this.$route.query.tel;
+    this.onSearch();
   },
   methods: {
     //   查询用户Id
     onSearch() {
-      let d = { id: this.id };
-      if (this.tel) {
-        d = { tel: this.tel };
-      }
+      let d = { tel: this.tel };
       friendsApi.getFriendsGourp(d).then(data => {
         this.userData = data.data;
-        console.log("是否好友");
-        console.log(this.userData);
       });
     },
     // 添加好友
@@ -89,11 +78,8 @@ export default {
       // 新建好友关系
       if (this.isNot) {
         friendsApi.addFriends(this.userData).then(data => {
-          if (this.userData.aTel) {
-            this.userData.status = 2;
-          } else {
-            this.onSearch();
-          }
+          console.log("重新获取好友信息");
+          this.onSearch();
         });
       } else {
         // 申请恢复好友关系

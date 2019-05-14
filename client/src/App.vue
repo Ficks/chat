@@ -28,7 +28,9 @@ export default {
     // 监听好友添加状态
     onFriends() {
       console.log("onFriends" + this.userInfo.tel);
-      this.socket.on("onFriends" + this.userInfo.tel, data => {
+      this.socket.on("onFriends", data => {
+        console.log("好友添加记录通知：");
+        console.log(data);
         this.getFriendsMsg();
         this.updateHyStatus();
         if (data.type == 0) {
@@ -50,6 +52,13 @@ export default {
   created() {
     this.conncet();
     this.getFriendsMsg();
+  },
+  watch: {
+    token() {
+      if (this.token) {
+        this.getFriendsMsg();
+      }
+    }
   }
 };
 </script>

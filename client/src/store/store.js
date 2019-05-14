@@ -1,9 +1,11 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import Config from '../config/config';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    openDrawer: false,//左侧导航
     token: "",
     userInfo: {},
     socket: null,
@@ -22,6 +24,10 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    // 设置左侧导航的展开与收起
+    setOpenDrawer(state, val) {
+      state.openDrawer = !state.openDrawer;
+    },
     // 设置token
     setToken(state, token) {
       state.token = token;
@@ -42,6 +48,16 @@ export default new Vuex.Store({
           // 身份标识，可以是时间戳或者唯一id，最要用来回去socketid进行私聊
           id: state.userInfo.tel
         });
+
+
+        state.socket.emit("serverXinTiao", true)
+
+        // 客户端心跳
+        state.socket.on("pcXinTiao", function (msg) {
+          setTimeout(() => {
+            state.socket.emit("serverXinTiao", true)
+          }, 5000)
+        })
       });
     },
     // 设置新好友通知数量
@@ -56,7 +72,7 @@ export default new Vuex.Store({
   actions: {
     onSocket({ commit }) {
       // 建立连接
-      commit('setSocket', io("http://127.0.0.1:3000"));
+      commit('setSocket', io(Config.baseUrl));
     }
   }
 });
