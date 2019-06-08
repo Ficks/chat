@@ -10,8 +10,8 @@
       </mu-button>
     </mu-appbar>
 
-    <div class="chatRecord" ref="scrollMain">
-      <div class="box_chat" ref="scrollBox">
+    <div class="chatRecord" ref="scrollMain" id="scrollMain">
+      <div class="box_chat" ref="scrollBox" id="scrollBox">
         <div class="more" v-show="loading"><i class="iconfont icon-jiazai"></i>加载更多</div>
         <div :class="{my:userInfo.tel==item.userTel}" class="list" v-for="(item,index) in chatList" :key="index">
           <div class="headImg" v-if="userInfo.tel==item.userTel"><img :src="userInfo.sysPath+userInfo.headImg" alt=""></div>
@@ -43,6 +43,7 @@
 </template>
 <script>
 import { mapGetters } from "vuex";
+import chatListApi from '@/api/chatList';
 export default {
   computed: {
     ...mapGetters(["userInfo", "socket"])
@@ -65,7 +66,9 @@ export default {
         size: 20
       },
       // 下拉加载
-      loading: false
+      loading: false,
+			scrollMain:null,
+			scrollBox:null,
     };
   },
   methods: {
@@ -81,7 +84,7 @@ export default {
           this.moreAll = true;
         }
         this.loading = false;
-        let scrollTop = this.$refs.scrollBox.clientHeight; //记录获取数据前的高度
+        let scrollTop = this.scrollBox.clientHeight; //记录获取数据前的高度
         this.chatList = data.concat(this.chatList);
         if (this.isOne) {
           this.scrollBom();
@@ -90,8 +93,8 @@ export default {
           }, 200);
         } else {
           this.$nextTick(() => {
-            this.$refs.scrollMain.scrollTop =
-              this.$refs.scrollBox.clientHeight - (scrollTop + 50);
+            this.scrollMain.scrollTop =
+              this.scrollBox.clientHeight - (scrollTop + 50);
           });
         }
       });
@@ -99,13 +102,16 @@ export default {
     // 初次进入页面后滑动到最底部
     scrollBom() {
       this.$nextTick(() => {
-        this.$refs.scrollMain.scrollTop = this.$refs.scrollBox.clientHeight;
+				console.log(this.scrollBox.clientHeight)
+        this.scrollMain.scrollTop = this.scrollBox.clientHeight;
+				console.log(this.scrollMain.scrollTop)
+
       });
     },
     // 滚动条滚动的时候
     onScroll() {
       if (
-        this.$refs.scrollMain.scrollTop <= 50 &&
+        this.scrollMain.scrollTop <= 50 &&
         !this.loading &&
         !this.isOne &&
         !this.moreAll
@@ -141,6 +147,11 @@ export default {
       this.chatVal = "";
       this.scrollBom();
       this.$refs.chatInput.style.height = "35px";
+			
+			chatListApi.addChatList({fId:this.toUser.groupId}).then(data=>{
+				console.log('添加成功');
+				console.log(data);
+			})
     },
     // 接受消息
     getMsg() {
@@ -149,15 +160,11 @@ export default {
         // 可以对数据进行渲染
 
         this.chatList.push(data);
-        console.log(
-          this.$refs.scrollMain.scrollTop,
-          this.$refs.scrollBox.clientHeight - 100
-        );
         // 如果在可视区域则滑动到新的消息哪里
         if (
-          this.$refs.scrollMain.scrollTop +
-            this.$refs.scrollMain.clientHeight >=
-          this.$refs.scrollBox.clientHeight - 100
+          this.scrollMain.scrollTop +
+            this.scrollMain.clientHeight >=
+          this.scrollBox.clientHeight - 100
         ) {
           this.scrollBom();
         }
@@ -333,14 +340,13 @@ export default {
     }
   },
   mounted() {
-    this.$nextTick(() => {
-      console.log(999);
-      console.log(999);
-      this.chatInt();
-      this.chatOut();
-      this.getXt();
-      this.$refs.scrollMain.addEventListener("scroll", this.onScroll, false);
-    });
+		this.scrollMain=document.getElementById("scrollMain");
+		this.scrollBox=document.getElementById("scrollBox");
+		this.chatInt();
+		this.chatOut();
+		this.getXt();
+		this.scrollMain.addEventListener("scroll", this.onScroll, false);
+		this.scrollBom();
   }
 };
 </script>

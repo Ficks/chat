@@ -21,7 +21,7 @@
 
       <div class="btns" v-if="userData.tel!=userInfo.tel">
         <template v-if="userData.status==1">
-          <mu-button full-width large color="primary" @click="$router.push({path:'/chat',query:{tel:userData.tel,nickName:userData.nickName,headImg:userData.headImg}})">发送消息</mu-button>
+          <mu-button full-width large color="primary" @click="$router.push({path:'/chat',query:{tel:userData.tel,groupId:userData.id,nickName:userData.nickName,headImg:userData.headImg}})">发送消息</mu-button>
           <mu-button full-width large color="error" @click="openSimpleDialog">删除好友</mu-button>
         </template>
 

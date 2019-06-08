@@ -160,7 +160,8 @@ router.post('/addFriends', async ctx => {
             if (addFriendsData.affectedRows == 1) {
                 // 添加好友请求记录
                 try {
-                    let addfriendRecordData = await mysql.query(`INSERT INTO friend_record(fId,aTel,bTel,status,aIsRead,bIsRead,createTime,updateTime) VALUES(${addFriendsData.insertId},${aUser.tel},${body.tel}, 2,1,0,${createTime},${createTime})`)
+					let sql=`INSERT INTO friend_record(fId,aTel,bTel,status,aIsRead,bIsRead,createTime,updateTime) VALUES(${addFriendsData.insertId},${aUser.tel},${body.tel}, 2,1,0,${createTime},${createTime})`;
+                    let addfriendRecordData = await mysql.query(sql);
                     if (addfriendRecordData.affectedRows == 1) {
                         await mysql.query('commit');
                         const user = ctx.session.userInfo;
@@ -205,7 +206,10 @@ router.post('/addFriends', async ctx => {
 
             if (setFriends.affectedRows == 1) {
                 try {
-                    let addfriendRecordData = await mysql.query(`INSERT INTO friend_record(fId,aTel,bTel,status,aIsRead,bIsRead,createTime,updateTime) VALUES(${bUser.id},${aUser.tel},${body.tel}, 2,1,0,${createTime},${createTime})`)
+					
+					let sql=`INSERT INTO friend_record(fId,aTel,bTel,status,aIsRead,bIsRead,createTime,updateTime) VALUES(${bUser.id},${aUser.tel},${body.tel}, 2,1,0,${createTime},${createTime})`;
+					
+                    let addfriendRecordData = await mysql.query(sql);
                     if (addfriendRecordData.affectedRows == 1) {
                         await mysql.query('commit');
                         const user = ctx.session.userInfo;

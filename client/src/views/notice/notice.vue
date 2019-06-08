@@ -117,10 +117,10 @@ export default {
     updateHyStatus() {
       this.$refs.container.scrollTop = 0; //必须设置父组件的ref
       this.init();
+
     }
   },
   created() {
-    this.init();
   }
 };
 </script>

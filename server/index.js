@@ -76,6 +76,19 @@ app.use(jwtKoa({ secret: 'conchat' }).unless({
     path: [/\/login/, /\/register/, /\/getImgCode/, /\/getSmsCode/, /\/retrievePwd/] //数组中的路径不需要通过jwt验证
 }))
 
+// 统一处理错误
+const errorEnd = async (ctx, next) => {
+    try {
+        await next();
+    } catch (err) {
+        ctx.body = {
+            code: -1,
+            msg: '服务器去旅行了!'
+        }
+    }
+}
+
+app.use(errorEnd);
 
 // 注册路由
 app.use(router.router());
