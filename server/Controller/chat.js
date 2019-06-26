@@ -30,6 +30,17 @@ const socket = function (app) {
             if (addData.affectedRows == 1) {
                 // 在这里判别访问用户根据用户账号返回消息
                 sendUserMsg(data.toUserTel, 'chat', data);
+                sendUserMsg(data.toUserTel, 'allChat', data);
+                // 添加到临时聊天列表
+                let selectSql = `select * from temporary_chat_list WHERE userId=${data.groupId}`;
+                let selectRow = await mysql.query(selectSql);
+                if (selectRow.length == 0) {
+                    let addTemSql = `insert into temporary_chat_list(type,userId,msgId) VALUES(1,${data.groupId},${addData.insertId})`;
+                    mysql.query(addTemSql);
+                } else {
+                    let updateSql = `update temporary_chat_list SET msgId=${addData.insertId} WHERE userId=${data.groupId}`
+                    mysql.query(updateSql);
+                }
                 // io.broadcast('chat' + data.toUserTel, data);
             } else {
                 // 如果消息存储失败 处理
@@ -83,6 +94,8 @@ const socket = function (app) {
 
 };
 
+
+// 推送消息给用户user为tel用户、name为监听的方法、data是数据
 function sendUserMsg(user, name, data) {
     if (userList[user]) {
         console.log("通知：" + user + "：" + name)

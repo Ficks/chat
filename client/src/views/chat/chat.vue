@@ -12,10 +12,21 @@
 
     <div class="chatRecord" ref="scrollMain" id="scrollMain">
       <div class="box_chat" ref="scrollBox" id="scrollBox">
-        <div class="more" v-show="loading"><i class="iconfont icon-jiazai"></i>加载更多</div>
-        <div :class="{my:userInfo.tel==item.userTel}" class="list" v-for="(item,index) in chatList" :key="index">
-          <div class="headImg" v-if="userInfo.tel==item.userTel"><img :src="userInfo.sysPath+userInfo.headImg" alt=""></div>
-          <div class="headImg" v-else><img :src="userInfo.sysPath+toUser.headImg" alt=""></div>
+        <div class="more" v-show="loading">
+          <i class="iconfont icon-jiazai"></i>加载更多
+        </div>
+        <div
+          :class="{my:userInfo.tel==item.userTel}"
+          class="list"
+          v-for="(item,index) in chatList"
+          :key="index"
+        >
+          <div class="headImg" v-if="userInfo.tel==item.userTel">
+            <img :src="userInfo.sysPath+userInfo.headImg" alt>
+          </div>
+          <div class="headImg" v-else>
+            <img :src="userInfo.sysPath+toUser.headImg" alt>
+          </div>
           <div class="mbox">
             <!-- <h3>Ficks</h3> -->
             <div class="text">{{item.msg}}</div>
@@ -29,21 +40,21 @@
         <div class="btns">
           <span class="iconfont icon-smile"></span>
         </div>
-        <textarea ref="chatInput" v-model="chatVal" v-on:keyup.enter="sendMsg" />
+        <textarea ref="chatInput" v-model="chatVal" v-on:keyup.enter="sendMsg"/>
         <div class="btns w78" v-if="!chatVal">
-              <span class="iconfont icon-smile"></span>
-              <span class="iconfont icon-jiahao"></span>
-            </div>
-            <div class="send_btn" v-else @keyup.enter="sendMsg">
-              <mu-button color="info" @click="sendMsg">发送</mu-button>
-            </div>
-          </div>
+          <span class="iconfont icon-smile"></span>
+          <span class="iconfont icon-jiahao"></span>
         </div>
+        <div class="send_btn" v-else @keyup.enter="sendMsg">
+          <mu-button color="info" @click="sendMsg">发送</mu-button>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 <script>
 import { mapGetters } from "vuex";
-import chatListApi from '@/api/chatList';
+import chatListApi from "@/api/chatList";
 export default {
   computed: {
     ...mapGetters(["userInfo", "socket"])
@@ -67,8 +78,8 @@ export default {
       },
       // 下拉加载
       loading: false,
-			scrollMain:null,
-			scrollBox:null,
+      scrollMain: null,
+      scrollBox: null
     };
   },
   methods: {
@@ -102,10 +113,9 @@ export default {
     // 初次进入页面后滑动到最底部
     scrollBom() {
       this.$nextTick(() => {
-				console.log(this.scrollBox.clientHeight)
+        console.log(this.scrollBox.clientHeight);
         this.scrollMain.scrollTop = this.scrollBox.clientHeight;
-				console.log(this.scrollMain.scrollTop)
-
+        console.log(this.scrollMain.scrollTop);
       });
     },
     // 滚动条滚动的时候
@@ -132,6 +142,7 @@ export default {
     sendMsg() {
       // 发送消息，这里可以用发送事件进行消息发送
       this.socket.emit("sendMsg", {
+        groupId: this.toUser.groupId,
         toUserTel: this.toUser.tel,
         userTel: this.userInfo.tel,
         msg: this.chatVal,
@@ -147,11 +158,6 @@ export default {
       this.chatVal = "";
       this.scrollBom();
       this.$refs.chatInput.style.height = "35px";
-			
-			chatListApi.addChatList({fId:this.toUser.groupId}).then(data=>{
-				console.log('添加成功');
-				console.log(data);
-			})
     },
     // 接受消息
     getMsg() {
@@ -162,8 +168,7 @@ export default {
         this.chatList.push(data);
         // 如果在可视区域则滑动到新的消息哪里
         if (
-          this.scrollMain.scrollTop +
-            this.scrollMain.clientHeight >=
+          this.scrollMain.scrollTop + this.scrollMain.clientHeight >=
           this.scrollBox.clientHeight - 100
         ) {
           this.scrollBom();
@@ -340,13 +345,13 @@ export default {
     }
   },
   mounted() {
-		this.scrollMain=document.getElementById("scrollMain");
-		this.scrollBox=document.getElementById("scrollBox");
-		this.chatInt();
-		this.chatOut();
-		this.getXt();
-		this.scrollMain.addEventListener("scroll", this.onScroll, false);
-		this.scrollBom();
+    this.scrollMain = document.getElementById("scrollMain");
+    this.scrollBox = document.getElementById("scrollBox");
+    this.chatInt();
+    this.chatOut();
+    this.getXt();
+    this.scrollMain.addEventListener("scroll", this.onScroll, false);
+    this.scrollBom();
   }
 };
 </script>
@@ -357,12 +362,12 @@ body {
 </style>
 
 <style lang="less" scoped>
-.container{
+.container {
   padding: 0;
   height: 100%;
 }
 
-.mu-load-more{
+.mu-load-more {
   overflow: hidden;
 }
 .container_c {
@@ -374,11 +379,11 @@ body {
   overflow: hidden;
 }
 
-.more{
+.more {
   text-align: center;
   color: #999;
   padding: 10px 0;
-  i{
+  i {
     animation: rotatemore 1s linear infinite;
     display: inline-block;
     color: #999;
@@ -386,10 +391,10 @@ body {
 }
 
 @keyframes rotatemore {
-  form{
+  form {
     transform: rotate(0deg);
   }
-  to{
+  to {
     transform: rotate(360deg);
   }
 }
@@ -400,7 +405,7 @@ body {
   -webkit-transition: all 0.2s cubic-bezier(0.55, 0, 0.1, 1);
   transition: all 0.2s cubic-bezier(0.55, 0, 0.1, 1);
 
-  .box_chat{
+  .box_chat {
     padding-bottom: 20px;
   }
   .list {
