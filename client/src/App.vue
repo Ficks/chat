@@ -1,28 +1,28 @@
 <template>
   <div id="app">
-    <router-view />
+    <router-view/>
   </div>
 </template>
 
 <script>
-import {mapActions, mapGetters, mapMutations} from 'vuex';
-import friendsApi from '@/api/friends';
-import chatListApi from '@/api/chatList';
+import { mapActions, mapGetters, mapMutations } from "vuex";
+import friendsApi from "@/api/friends";
+import chatListApi from "@/api/chatList";
 export default {
-  name: 'App',
+  name: "App",
   data() {
     return {};
   },
   computed: {
-    ...mapGetters(['socket', 'userInfo', 'token', 'globalMsg']),
+    ...mapGetters(["socket", "userInfo", "token", "globalMsg"])
   },
   methods: {
-    ...mapActions(['onSocket']),
+    ...mapActions(["onSocket"]),
     ...mapMutations([
-      'setNewFriendsMsgLen',
-      'updateHyStatus',
-      'setGlobalMsg',
-      'addGlobalMsg',
+      "setNewFriendsMsgLen",
+      "updateHyStatus",
+      "setGlobalMsg",
+      "addGlobalMsg"
     ]),
     // 连接socket
     conncet() {
@@ -33,9 +33,9 @@ export default {
     },
     // 监听好友添加状态
     onFriends() {
-      console.log('onFriends' + this.userInfo.tel);
-      this.socket.on('onFriends', data => {
-        console.log('好友添加记录通知：');
+      console.log("onFriends" + this.userInfo.tel);
+      this.socket.on("onFriends", data => {
+        console.log("好友添加记录通知：");
         console.log(data);
         this.getFriendsMsg();
         this.updateHyStatus();
@@ -62,7 +62,7 @@ export default {
         for (let i = 0; i < data.length; i++) {
           chatMsg[data[i].groupId] = {
             newMsg: data[i],
-            list: [],
+            list: []
           };
         }
         if (data.length > 0) {
@@ -74,13 +74,13 @@ export default {
 
     // 统一处理聊天消息
     onMsg() {
-      this.socket.on('onMsg', data => {
-        console.log('您有新的消息：');
+      this.socket.on("onMsg", data => {
+        console.log("您有新的消息：");
         console.log(this.globalMsg);
         console.log(data);
         this.addGlobalMsg(data);
       });
-    },
+    }
   },
   created() {
     this.conncet();
@@ -93,8 +93,8 @@ export default {
       if (this.token) {
         this.getFriendsMsg();
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
