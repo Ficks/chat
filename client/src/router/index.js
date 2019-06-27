@@ -1,114 +1,130 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import Vue from 'vue';
+import Router from 'vue-router';
+import HelloWorld from '@/components/HelloWorld';
 
-Vue.use(Router)
+Vue.use (Router);
 
 Router.prototype.goBack = () => {
   this.a.isBack = true;
-  window.history.go(-1);
-}
+  window.history.go (-1);
+};
 
-export default new Router({
+export default new Router ({
   routes: [
     {
       path: '/',
-      name: "app",
-      component: resolve => require(['@/views/index'], resolve),
+      name: 'app',
+      component: resolve => require (['@/views/index'], resolve),
       redirect: to => {
-        return '/index/message'
+        return '/index/message';
       },
       children: [
         {
           path: '/login',
           name: 'login',
           meta: {
-            title: '登录'
+            title: '登录',
           },
-          component: resolve => require(['@/views/login/login'], resolve)
-        }, {
+          component: resolve => require (['@/views/login/login'], resolve),
+        },
+        {
           path: '/register',
           name: 'register',
           meta: {
-            title: '注册'
+            title: '注册',
           },
-          component: resolve => require(['@/views/register/register'], resolve)
-        }, {
+          component: resolve =>
+            require (['@/views/register/register'], resolve),
+        },
+        {
           path: '/retrievePwd',
           name: 'retrievePwd',
           meta: {
-            title: '找回密码'
+            title: '找回密码',
           },
-          component: resolve => require(['@/views/retrievePwd/retrievePwd'], resolve)
-        }, {
+          component: resolve =>
+            require (['@/views/retrievePwd/retrievePwd'], resolve),
+        },
+        {
           path: '/index',
           name: 'index',
           meta: {
-            title: '首页'
+            title: '首页',
           },
-          component: resolve => require(['@/views/index/index'], resolve),
-          children: [{
-            path: '/index/message',
-            name: 'message',
-            meta: {
-              title: '聊天记录'
+          component: resolve => require (['@/views/index/index'], resolve),
+          children: [
+            {
+              path: '/index/message',
+              name: 'message',
+              meta: {
+                title: '聊天记录',
+                keepAlive: true,
+              },
+              component: resolve =>
+                require (['@/views/index/message'], resolve),
             },
-            component: resolve => require(['@/views/index/message'], resolve)
-
-          }, {
-            path: '/index/friends',
-            name: 'friends',
-            meta: {
-              title: '通讯录'
+            {
+              path: '/index/friends',
+              name: 'friends',
+              meta: {
+                title: '通讯录',
+              },
+              component: resolve =>
+                require (['@/views/index/friends'], resolve),
             },
-            component: resolve => require(['@/views/index/friends'], resolve)
-
-          }, {
-            path: '/index/find',
-            name: 'find',
-            meta: {
-              title: '发现'
+            {
+              path: '/index/find',
+              name: 'find',
+              meta: {
+                title: '发现',
+              },
+              component: resolve => require (['@/views/index/find'], resolve),
             },
-            component: resolve => require(['@/views/index/find'], resolve)
-
-          }, {
-            path: '/index/world',
-            name: 'world',
-            meta: {
-              title: '世界'
+            {
+              path: '/index/world',
+              name: 'world',
+              meta: {
+                title: '世界',
+              },
+              component: resolve => require (['@/views/index/world'], resolve),
             },
-            component: resolve => require(['@/views/index/world'], resolve)
-
-          },]
-        }, {
+          ],
+        },
+        {
           path: '/addFriends',
           name: 'addFriends',
           meta: {
-            title: '添加好友'
+            title: '添加好友',
           },
-          component: resolve => require(['@/views/addFriends/addFriends'], resolve)
-        }, {
+          component: resolve =>
+            require (['@/views/addFriends/addFriends'], resolve),
+        },
+        {
           path: '/friendsInfo',
           name: 'friendsInfo',
           meta: {
-            title: '好友信息'
+            title: '好友信息',
           },
-          component: resolve => require(['@/views/friendsInfo/friendsInfo'], resolve)
-        }, {
+          component: resolve =>
+            require (['@/views/friendsInfo/friendsInfo'], resolve),
+        },
+        {
           path: '/notice',
           name: 'notice',
           meta: {
-            title: '新的朋友'
+            title: '新的朋友',
           },
-          component: resolve => require(['@/views/notice/notice'], resolve)
-        }, {
+          component: resolve => require (['@/views/notice/notice'], resolve),
+        },
+        {
           path: '/chat',
           name: 'chat',
           meta: {
-            title: '聊天'
+            title: '聊天',
           },
-          component: resolve => require(['@/views/chat/chat'], resolve)
-        },]
+          component: resolve => require (['@/views/chat/chat'], resolve),
+        },
+      ],
     },
-  ]
-})
+  ],
+});

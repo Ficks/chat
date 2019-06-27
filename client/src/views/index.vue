@@ -1,33 +1,40 @@
 <template>
-    <div class="rel">
-        <transition :name='transitionName'>
-            <!-- 不能叠加两层有绝对定位 -->
-            <router-view class="Router" />
-        </transition>
-    </div>
+  <div class="rel">
+
+    <transition :name='transitionName'>
+      <!-- 不能叠加两层有绝对定位 -->
+      <router-view v-if="!$route.meta.keepAlive" class="Router" />
+    </transition>
+    <transition :name='transitionName'>
+      <!-- 不能叠加两层有绝对定位 -->
+      <keep-alive>
+        <router-view v-if="$route.meta.keepAlive" class="Router" />
+      </keep-alive>
+    </transition>
+  </div>
 </template>
 
 <script>
 export default {
-  name: "App",
+  name: 'App',
   data() {
     return {
-      transitionName: "slide-left"
+      transitionName: 'slide-left',
     };
   },
   beforeRouteUpdate(to, from, next) {
     let isBack = this.$router.isBack;
     if (isBack) {
-      this.transitionName = "slide-right";
+      this.transitionName = 'slide-right';
     } else {
-      this.transitionName = "slide-left";
+      this.transitionName = 'slide-left';
     }
     setTimeout(() => {
       this.$router.isBack = false;
       next();
     }, 60);
   },
-  created() {}
+  created() {},
 };
 </script>
 </script>

@@ -12,81 +12,66 @@
     </mu-appbar>
 
     <div class="pad_box_wr">
-      <mu-load-more
-        @refresh="refresh"
-        :refreshing="searchLoad.refreshing"
-        :loading="searchLoad.loading"
-        @load="load"
-      >
-        <!-- 聊天 -->
-        <mu-paper :z-depth="1" class="demo-list-wrap">
-          <mu-list textline="three-line">
-            <!-- <mu-sub-header>今天</mu-sub-header> -->
-            <template v-for="(item,index) in listArr">
-              <mu-list-item
-                avatar
-                :to="{path:'/chat',query:{tel:item.tel,groupId:item.userId,nickName:item.nickName,headImg:item.headImg}}"
-                button
-              >
-                <mu-list-item-action>
-                  <mu-avatar>
-                    <img :src="userInfo.sysPath+item.headImg">
-                  </mu-avatar>
-                </mu-list-item-action>
-                <mu-list-item-content>
-                  <mu-list-item-title>{{item.nickName}}</mu-list-item-title>
-                  <mu-list-item-sub-title>
-                    <!-- <span style="color: rgba(0, 0, 0, .87)">Myron Liu -</span> -->
-                    {{item.msg}}
-                  </mu-list-item-sub-title>
-                </mu-list-item-content>
-              </mu-list-item>
-              <mu-divider v-if="index!=listArr.length-1"></mu-divider>
-            </template>
-          </mu-list>
-        </mu-paper>
-      </mu-load-more>
+      <!-- 聊天 -->
+      <mu-paper :z-depth="1" class="demo-list-wrap">
+        <mu-list textline="three-line">
+          <!-- <mu-sub-header>今天</mu-sub-header> -->
+          <template v-for="(item,index) in globalMsg">
+            <mu-list-item avatar :to="{path:'/chat',query:{tel:item.newMsg.tel,groupId:item.newMsg.groupId,nickName:item.newMsg.nickName,headImg:item.newMsg.headImg}}" button>
+              <mu-list-item-action>
+                <mu-avatar>
+                  <img :src="userInfo.sysPath+item.newMsg.headImg">
+                </mu-avatar>
+              </mu-list-item-action>
+              <mu-list-item-content>
+                <mu-list-item-title>{{item.newMsg.nickName}}</mu-list-item-title>
+                <mu-list-item-sub-title>
+                  <!-- <span style="color: rgba(0, 0, 0, .87)">Myron Liu -</span> -->
+                  {{item.newMsg.msg}}
+                </mu-list-item-sub-title>
+              </mu-list-item-content>
+            </mu-list-item>
+            <mu-divider></mu-divider>
+          </template>
+        </mu-list>
+      </mu-paper>
     </div>
   </div>
 </template>
 <script>
-import { mapGetters, mapMutations } from "vuex";
-import common from "@/mixins/common";
-import listArr from "@/mixins/listArr";
-import chatListApi from "@/api/chatList";
+import {mapGetters, mapMutations} from 'vuex';
+import common from '@/mixins/common';
 export default {
-  mixins: [common, listArr],
+  mixins: [common],
   computed: {
-    ...mapGetters(["userInfo"])
+    ...mapGetters(['userInfo', 'globalMsg']),
   },
   data() {
     return {
-      shift: "movies",
+      shift: 'movies',
       docked: false,
       openDrawer: false,
-      position: "left",
-      defaultHeadImg: "@/assets/headImg.jpg"
+      position: 'left',
+      defaultHeadImg: '@/assets/headImg.jpg',
     };
   },
   methods: {
-    ...mapMutations(["setOpenDrawer"]),
+    ...mapMutations(['setOpenDrawer']),
     outLogin() {
       // 退出登录
-      this.$router.push({ path: "/login" });
+      this.$router.push({path: '/login'});
     },
-    getList() {
-      chatListApi.getChatList(this.searchList).then(data => {
-        this.afterGetList(data);
-      });
-    }
   },
   created() {},
   mounted() {
     console.log(this.userInfo);
-  }
+  },
 };
 </script>
 <style lang="less" scoped>
+.mu-list{
+  padding: 0;
+}
 .fixbom {
   position: fixed;
   bottom: 0;
