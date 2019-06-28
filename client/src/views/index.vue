@@ -1,16 +1,15 @@
 <template>
   <div class="rel">
 
+    <!-- 不能叠加两层有绝对定位 -->
     <transition :name='transitionName'>
-      <!-- 不能叠加两层有绝对定位 -->
-      <router-view v-if="!$route.meta.keepAlive" class="Router" />
+      <router-view class="Router" />
     </transition>
-    <transition :name='transitionName'>
-      <!-- 不能叠加两层有绝对定位 -->
+    <!-- <transition :name='transitionName'>
       <keep-alive>
         <router-view v-if="$route.meta.keepAlive" class="Router" />
       </keep-alive>
-    </transition>
+    </transition> -->
   </div>
 </template>
 

@@ -15,12 +15,7 @@
         <div class="more" v-show="loading">
           <i class="iconfont icon-jiazai"></i>加载更多
         </div>
-        <div
-          :class="{my:userInfo.tel==item.userTel}"
-          class="list"
-          v-for="(item,index) in chatList"
-          :key="index"
-        >
+        <div :class="{my:userInfo.tel==item.userTel}" class="list" v-for="(item,index) in chatList" :key="index">
           <div class="headImg" v-if="userInfo.tel==item.userTel">
             <img :src="userInfo.sysPath+userInfo.headImg" alt>
           </div>
@@ -40,7 +35,7 @@
         <div class="btns">
           <span class="iconfont icon-smile"></span>
         </div>
-        <textarea ref="chatInput" v-model="chatVal" v-on:keyup.enter="sendMsg"/>
+        <textarea ref="chatInput" v-model="chatVal" v-on:keyup.enter="sendMsg" />
         <div class="btns w78" v-if="!chatVal">
           <span class="iconfont icon-smile"></span>
           <span class="iconfont icon-jiahao"></span>
@@ -53,20 +48,20 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapMutations } from "vuex";
-import chatListApi from "@/api/chatList";
+import {mapGetters, mapMutations} from 'vuex';
+import chatListApi from '@/api/chatList';
 export default {
   computed: {
-    ...mapGetters(["userInfo", "socket", "globalMsg", "goToBom"]),
+    ...mapGetters(['userInfo', 'socket', 'globalMsg', 'goToBom']),
     chatList() {
-      console.log("触发触发");
+      console.log('触发触发');
       console.log(this.globalMsg[this.toUser.groupId]);
       if (this.globalMsg[this.toUser.groupId]) {
         return this.globalMsg[this.toUser.groupId].list || [];
       } else {
         return [];
       }
-    }
+    },
   },
   data() {
     return {
@@ -75,19 +70,19 @@ export default {
       judgeDeviceType: {},
       // socket: null,
       toUser: {
-        tel: "",
-        nickName: "",
-        headImg: ""
+        tel: '',
+        nickName: '',
+        headImg: '',
       },
-      chatVal: "",
+      chatVal: '',
       searchData: {
         page: 1,
-        size: 20
+        size: 20,
       },
       // 下拉加载
       loading: false,
       scrollMain: null,
-      scrollBox: null
+      scrollBox: null,
     };
   },
   watch: {
@@ -99,14 +94,14 @@ export default {
       if (this.goToBom.groupId == this.toUser.groupId) {
         this.scrollBom();
       }
-    }
+    },
   },
   methods: {
-    ...mapMutations(["concatGlobalMsg", "addGlobalMsg"]),
+    ...mapMutations(['concatGlobalMsg', 'addGlobalMsg']),
     // 获取历史数据
     getHistory() {
       // 接收消息
-      this.socket.on("chatHistory" + this.toUser.groupId, data => {
+      this.socket.on('chatHistory' + this.toUser.groupId, data => {
         this.searchData.page++;
         // 加载完所有聊天记录
         if (data.length < this.searchData.size) {
@@ -116,7 +111,7 @@ export default {
         let scrollTop = this.scrollBox.clientHeight; //记录获取数据前的高度
         if (data.length > 0) {
           console.log(data);
-          this.concatGlobalMsg({ list: data, groupId: this.toUser.groupId });
+          this.concatGlobalMsg({list: data, groupId: this.toUser.groupId});
         }
         if (this.isOne) {
           this.scrollBom();
@@ -132,11 +127,11 @@ export default {
       });
 
       if (this.chatList.length == 0) {
-        this.socket.emit("chatHistory", {
+        this.socket.emit('chatHistory', {
           userTel: this.userInfo.tel,
           toUserTel: this.toUser.tel,
           searchData: this.searchData,
-          groupId: this.toUser.groupId
+          groupId: this.toUser.groupId,
         });
       }
     },
@@ -157,11 +152,11 @@ export default {
         this.loading = true;
 
         setTimeout(() => {
-          this.socket.emit("chatHistory", {
+          this.socket.emit('chatHistory', {
             userTel: this.userInfo.tel,
             toUserTel: this.toUser.tel,
             searchData: this.searchData,
-            groupId: this.toUser.groupId
+            groupId: this.toUser.groupId,
           });
           this.loading = false;
         }, 200);
@@ -177,29 +172,30 @@ export default {
           toUserTel: this.toUser.tel,
           userTel: this.userInfo.tel,
           msg: this.chatVal,
-          msgType: "1"
+          msgType: '1',
+          createTime: new Date(),
         },
         userInfo: {
           tel: this.userInfo.tel,
           headImg: this.userInfo.headImg,
-          nickName: this.userInfo.nickName
-        }
+          nickName: this.userInfo.nickName,
+        },
       };
-      this.socket.emit("sendMsg", msgData);
+      this.socket.emit('sendMsg', msgData);
       msgData.userInfo = {
         tel: this.toUser.tel,
         headImg: this.toUser.headImg,
-        nickName: this.toUser.nickName
+        nickName: this.toUser.nickName,
       };
       this.addGlobalMsg(msgData);
-      this.chatVal = "";
+      this.chatVal = '';
       this.scrollBom();
-      this.$refs.chatInput.style.height = "35px";
+      this.$refs.chatInput.style.height = '35px';
     },
     // 接受消息
     getMsg() {
       // 接收消息
-      this.socket.on("chat", data => {
+      this.socket.on('chat', data => {
         // 可以对数据进行渲染
         // 如果在可视区域则滑动到新的消息哪里
         if (
@@ -213,7 +209,7 @@ export default {
     // 初始化聊天记录
     chatInt() {
       this.toUser = this.$route.query;
-      console.log("我的组:" + this.toUser.groupId);
+      console.log('我的组:' + this.toUser.groupId);
       console.log(this.globalMsg);
       console.table(this.chatList);
       this.getMsg();
@@ -222,7 +218,7 @@ export default {
     // 表示服务器断开连接了
     chatOut() {
       // 表示连接断开了
-      this.socket.on("disconnect", function() {
+      this.socket.on('disconnect', function() {
         // console.log("聊天服务器断开了");
       });
     },
@@ -231,7 +227,7 @@ export default {
       if (this.judgeDeviceType.isIOS) {
         // IOS 键盘弹起：IOS 和 Android 输入框获取焦点键盘弹起
         $input.addEventListener(
-          "focus",
+          'focus',
           function() {
             // console.log("IOS 键盘弹起啦！");
             // IOS 键盘弹起后操作
@@ -240,7 +236,7 @@ export default {
         );
 
         // IOS 键盘收起：IOS 点击输入框以外区域或点击收起按钮，输入框都会失去焦点，键盘会收起，
-        $input.addEventListener("blur", () => {
+        $input.addEventListener('blur', () => {
           // console.log("IOS 键盘收起啦！");
           // IOS 键盘收起后操作
           var wechatInfo = window.navigator.userAgent.match(
@@ -251,7 +247,7 @@ export default {
           var wechatVersion = wechatInfo[1];
           var version = navigator.appVersion.match(/OS (\d+)_(\d+)_?(\d+)?/);
 
-          if (+wechatVersion.replace(/\./g, "") >= 674 && +version[1] >= 12) {
+          if (+wechatVersion.replace(/\./g, '') >= 674 && +version[1] >= 12) {
             window.scrollTo(
               0,
               Math.max(
@@ -269,7 +265,7 @@ export default {
           document.documentElement.clientHeight || document.body.clientHeight;
 
         window.addEventListener(
-          "resize",
+          'resize',
           function() {
             var resizeHeight =
               document.documentElement.clientHeight ||
@@ -297,7 +293,7 @@ export default {
 
         return {
           isIOS: isIOS,
-          isAndroid: isAndroid
+          isAndroid: isAndroid,
         };
       })();
 
@@ -306,25 +302,25 @@ export default {
     },
     autoTextArea(elem, extra, maxHeight) {
       extra = extra || 0;
-      var isFirefox = !!document.getBoxObjectFor || "mozInnerScreenX" in window,
-        isOpera = !!window.opera && !!window.opera.toString().indexOf("Opera"),
+      var isFirefox = !!document.getBoxObjectFor || 'mozInnerScreenX' in window,
+        isOpera = !!window.opera && !!window.opera.toString().indexOf('Opera'),
         addEvent = function(type, callback) {
           elem.addEventListener
             ? elem.addEventListener(type, callback, false)
-            : elem.attachEvent("on" + type, callback);
+            : elem.attachEvent('on' + type, callback);
         },
         getStyle = elem.currentStyle
           ? function(name) {
               var val = elem.currentStyle[name];
 
-              if (name === "height" && val.search(/px/i) !== 1) {
+              if (name === 'height' && val.search(/px/i) !== 1) {
                 var rect = elem.getBoundingClientRect();
                 return (
                   rect.bottom -
                   rect.top -
-                  parseFloat(getStyle("paddingTop")) -
-                  parseFloat(getStyle("paddingBottom")) +
-                  "px"
+                  parseFloat(getStyle('paddingTop')) -
+                  parseFloat(getStyle('paddingBottom')) +
+                  'px'
                 );
               }
 
@@ -333,9 +329,9 @@ export default {
           : function(name) {
               return getComputedStyle(elem, null)[name];
             },
-        minHeight = parseFloat(getStyle("height"));
+        minHeight = parseFloat(getStyle('height'));
 
-      elem.style.resize = "none";
+      elem.style.resize = 'none';
 
       var change = function() {
         var scrollTop,
@@ -348,22 +344,22 @@ export default {
 
         if (!isFirefox && !isOpera) {
           padding =
-            parseInt(getStyle("paddingTop")) +
-            parseInt(getStyle("paddingBottom"));
+            parseInt(getStyle('paddingTop')) +
+            parseInt(getStyle('paddingBottom'));
         }
         scrollTop =
           document.body.scrollTop || document.documentElement.scrollTop;
 
-        elem.style.height = minHeight + "px";
+        elem.style.height = minHeight + 'px';
         if (elem.scrollHeight > minHeight) {
           if (maxHeight && elem.scrollHeight > maxHeight) {
             height = maxHeight - padding;
-            style.overflowY = "auto";
+            style.overflowY = 'auto';
           } else {
             height = elem.scrollHeight - padding;
-            style.overflowY = "hidden";
+            style.overflowY = 'hidden';
           }
-          style.height = height + extra + "px";
+          style.height = height + extra + 'px';
           scrollTop += parseInt(style.height) - elem.currHeight;
           document.body.scrollTop = scrollTop;
           document.documentElement.scrollTop = scrollTop;
@@ -371,21 +367,21 @@ export default {
         }
       };
 
-      addEvent("propertychange", change);
-      addEvent("input", change);
-      addEvent("focus", change);
+      addEvent('propertychange', change);
+      addEvent('input', change);
+      addEvent('focus', change);
       change();
-    }
+    },
   },
   mounted() {
-    this.scrollMain = document.getElementById("scrollMain");
-    this.scrollBox = document.getElementById("scrollBox");
+    this.scrollMain = document.getElementById('scrollMain');
+    this.scrollBox = document.getElementById('scrollBox');
     this.chatInt();
     this.chatOut();
     this.getXt();
-    this.scrollMain.addEventListener("scroll", this.onScroll, false);
+    this.scrollMain.addEventListener('scroll', this.onScroll, false);
     this.scrollBom();
-  }
+  },
 };
 </script>
 <style>

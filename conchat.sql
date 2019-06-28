@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50553
 File Encoding         : 65001
 
-Date: 2019-06-27 18:21:54
+Date: 2019-06-28 18:27:41
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -159,19 +159,31 @@ DROP TABLE IF EXISTS `messages`;
 CREATE TABLE `messages` (
   `mId` int(11) NOT NULL AUTO_INCREMENT,
   `msg` varchar(255) NOT NULL,
+  `groupId` int(11) NOT NULL,
   `msgType` char(1) NOT NULL,
   `userTel` char(11) NOT NULL,
   `toUserTel` char(11) NOT NULL,
   `status` char(10) NOT NULL,
-  `createTime` char(15) DEFAULT NULL,
-  `updateTime` char(15) DEFAULT NULL,
+  `createTime` datetime NOT NULL,
+  `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`mId`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=169 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM AUTO_INCREMENT=189 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of messages
 -- ----------------------------
-INSERT INTO `messages` VALUES ('168', '12312', '1', '17620327669', '15111327689', '1', '1561630778426', null);
+INSERT INTO `messages` VALUES ('177', 'nihao\n', '58', '1', '17620327669', '17620327662', '1', '2019-06-28 10:03:49', null);
+INSERT INTO `messages` VALUES ('178', '我要排在第一位\n', '56', '1', '17620327669', '15111327689', '1', '2019-06-28 10:10:13', null);
+INSERT INTO `messages` VALUES ('179', '哈哈\n', '56', '1', '17620327669', '15111327689', '1', '2019-06-28 10:18:28', null);
+INSERT INTO `messages` VALUES ('180', '排序啊\n', '56', '1', '17620327669', '15111327689', '1', '2019-06-28 10:18:31', null);
+INSERT INTO `messages` VALUES ('181', '你妹的\n', '56', '1', '17620327669', '15111327689', '1', '2019-06-28 10:18:42', null);
+INSERT INTO `messages` VALUES ('182', '哼哼\n', '58', '1', '17620327669', '17620327662', '1', '2019-06-28 10:19:08', null);
+INSERT INTO `messages` VALUES ('183', '我排第二\n', '56', '1', '17620327669', '15111327689', '1', '2019-06-28 10:22:36', null);
+INSERT INTO `messages` VALUES ('184', '我排第一', '58', '1', '17620327669', '17620327662', '1', '2019-06-28 10:23:21', null);
+INSERT INTO `messages` VALUES ('185', '我排第一第一啊111\n', '56', '1', '17620327669', '15111327689', '1', '2019-06-28 10:24:39', null);
+INSERT INTO `messages` VALUES ('186', '现在我排第一了吧\n', '58', '1', '17620327669', '17620327662', '1', '2019-06-28 10:37:32', null);
+INSERT INTO `messages` VALUES ('187', '111', '56', '1', '17620327669', '15111327689', '1', '2019-06-28 10:40:31', null);
+INSERT INTO `messages` VALUES ('188', '1111xx', '58', '1', '17620327669', '17620327662', '1', '2019-06-28 10:40:36', null);
 
 -- ----------------------------
 -- Table structure for `temporary_chat_list`
@@ -183,12 +195,13 @@ CREATE TABLE `temporary_chat_list` (
   `groupId` int(11) NOT NULL COMMENT '关联gourpId',
   `msgId` int(11) NOT NULL COMMENT '关联ID',
   PRIMARY KEY (`tId`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
 
 -- ----------------------------
 -- Records of temporary_chat_list
 -- ----------------------------
-INSERT INTO `temporary_chat_list` VALUES ('11', '1', '56', '168');
+INSERT INTO `temporary_chat_list` VALUES ('15', '1', '58', '188');
+INSERT INTO `temporary_chat_list` VALUES ('16', '1', '56', '187');
 
 -- ----------------------------
 -- Table structure for `user`
@@ -212,8 +225,8 @@ CREATE TABLE `user` (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES ('8', '17620327669', '999999', 'Ficks', null, null, '/headImg/ficks.jpg', null, '0', '0', '1561629234347');
-INSERT INTO `user` VALUES ('9', '17620327662', '999999', '17620327662', null, null, '/headImg/defaultHeadImg.jpg', null, '0', '0', '1560059453541');
+INSERT INTO `user` VALUES ('8', '17620327669', '999999', 'Ficks', null, null, '/headImg/ficks.jpg', null, '0', '0', '1561687787165');
+INSERT INTO `user` VALUES ('9', '17620327662', '999999', '17620327662', null, null, '/headImg/defaultHeadImg.jpg', null, '0', '0', '1561686174435');
 INSERT INTO `user` VALUES ('10', '17620327661', '999999', '17620327661', null, null, '/headImg/defaultHeadImg.jpg', null, '0', '0', '0');
 INSERT INTO `user` VALUES ('11', '15111327689', '999999', '小虎猫', null, null, '/headImg/defaultHeadImg.jpg', null, '0', '0', '1561629082317');
 INSERT INTO `user` VALUES ('12', '15111640045', '999999', '15111640045', null, null, '/headImg/defaultHeadImg.jpg', null, '0', '0', '0');

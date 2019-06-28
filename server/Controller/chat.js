@@ -19,13 +19,13 @@ const socket = function (app) {
   // 接收消息
   io.on ('sendMsg', async function (context) {
     let {data} = context;
-    let createTime = new Date ().getTime ();
     // 向客服端实时发送消息
     console.log ('用户发送的消息');
     console.log (data);
 
     try {
-      let sql = `insert into messages(msg,msgType,userTel,toUserTel,status,createTime) values('${data.msgInfo.msg}',${data.msgInfo.msgType},${data.msgInfo.userTel},${data.msgInfo.toUserTel},1,${createTime})`;
+      let sql = `insert into messages(groupId,msg,msgType,userTel,toUserTel,status,createTime) values('${data.groupId}','${data.msgInfo.msg}',${data.msgInfo.msgType},${data.msgInfo.userTel},${data.msgInfo.toUserTel},1,now())`;
+      console.log (sql);
       let addData = await mysql.query (sql);
       if (addData.affectedRows == 1) {
         // 在这里判别访问用户根据用户账号返回消息
@@ -58,7 +58,7 @@ const socket = function (app) {
     console.log ('次数');
     let {data} = context;
     console.log (data.searchData);
-    let sql = `select * from messages where (userTel=${data.userTel} and toUserTel=${data.toUserTel}) or (userTel=${data.toUserTel} and toUserTel=${data.userTel}) ORDER BY mId desc limit ${(data.searchData.page - 1) * data.searchData.size},${data.searchData.size}`;
+    let sql = `select * from messages where groupId=${data.groupId} ORDER BY mId desc limit ${(data.searchData.page - 1) * data.searchData.size},${data.searchData.size}`;
     let msgData = await mysql.query (sql);
 
     msgData.sort (function (a, b) {

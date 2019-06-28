@@ -27,40 +27,40 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from "vuex";
-import Config from "@/config/config";
-import loginApi from "@/api/login";
+import {mapActions, mapMutations} from 'vuex';
+import Config from '@/config/config';
+import loginApi from '@/api/login';
 export default {
-  Name: "登录",
+  Name: '登录',
   data() {
     return {
       telRules: [
-        { validate: val => !!val, message: "必须填写手机号" },
+        {validate: val => !!val, message: '必须填写手机号'},
         {
           validate: val =>
             /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/.test(
               val
             ),
-          message: "手机号格式不正确"
-        }
+          message: '手机号格式不正确',
+        },
       ],
       pwdRules: [
-        { validate: val => !!val, message: "必须填写密码" },
+        {validate: val => !!val, message: '必须填写密码'},
         {
           validate: val => val.length >= 6 && val.length <= 16,
-          message: "密码长度大于6小于16"
-        }
+          message: '密码长度大于6小于16',
+        },
       ],
       validateForm: {
-        tel: "17620327669",
-        pwd: "999999"
+        tel: '17620327669',
+        pwd: '999999',
       },
-      showPwd: false
+      showPwd: false,
     };
   },
   methods: {
-    ...mapActions(["onSocket"]),
-    ...mapMutations(["setToken", "setUserInfo"]),
+    ...mapActions(['onSocket']),
+    ...mapMutations(['setToken', 'setUserInfo']),
     submit() {
       this.$refs.form.validate().then(result => {
         if (result) {
@@ -70,6 +70,8 @@ export default {
     },
     loginSubmit() {
       loginApi.login(this.validateForm).then(data => {
+        localStorage.tel = this.validateForm.tel;
+        localStorage.pwd = this.validateForm.pwd;
         document.title = data.userInfo.nickName;
         data.userInfo.sysPath = Config.baseUrl;
         sessionStorage.userInfo = JSON.stringify(data.userInfo);
@@ -77,15 +79,17 @@ export default {
         this.setToken(data.token);
         this.setUserInfo(data.userInfo);
         this.onSocket();
-        this.$router.push("/");
+        this.$router.push('/');
       });
-    }
+    },
   },
   created() {
-    sessionStorage.token = sessionStorage.userInfo = "";
-    this.setToken("");
+    sessionStorage.token = sessionStorage.userInfo = '';
+    this.validateForm.tel = localStorage.tel || '17620327669';
+    this.validateForm.pwd = localStorage.pwd || '999999';
+    this.setToken('');
     this.setUserInfo({});
-  }
+  },
 };
 </script>
 <style lang="less" scoped>

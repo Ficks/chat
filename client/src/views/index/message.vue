@@ -16,18 +16,18 @@
       <mu-paper :z-depth="1" class="demo-list-wrap">
         <mu-list textline="three-line">
           <!-- <mu-sub-header>今天</mu-sub-header> -->
-          <template v-for="(item,index) in globalMsg">
-            <mu-list-item avatar :to="{path:'/chat',query:{tel:item.newMsg.tel,groupId:item.newMsg.groupId,nickName:item.newMsg.nickName,headImg:item.newMsg.headImg}}" button>
+          <template v-for="(item,index) in listArr">
+            <mu-list-item avatar :to="{path:'/chat',query:{tel:item.tel,groupId:item.groupId,nickName:item.nickName,headImg:item.headImg}}" button>
               <mu-list-item-action>
                 <mu-avatar>
-                  <img :src="userInfo.sysPath+item.newMsg.headImg">
+                  <img :src="userInfo.sysPath+item.headImg">
                 </mu-avatar>
               </mu-list-item-action>
               <mu-list-item-content>
-                <mu-list-item-title>{{item.newMsg.nickName}}</mu-list-item-title>
+                <mu-list-item-title>{{item.nickName}}</mu-list-item-title>
                 <mu-list-item-sub-title>
                   <!-- <span style="color: rgba(0, 0, 0, .87)">Myron Liu -</span> -->
-                  {{item.newMsg.msg}}
+                  {{item.msg}}
                 </mu-list-item-sub-title>
               </mu-list-item-content>
             </mu-list-item>
@@ -45,6 +45,18 @@ export default {
   mixins: [common],
   computed: {
     ...mapGetters(['userInfo', 'globalMsg']),
+    listArr() {
+      let arr = [];
+      for (let key in this.globalMsg) {
+        arr.push(this.globalMsg[key].newMsg);
+      }
+      arr.sort((a, b) => {
+        let aTm = new Date(a.createTime).getTime();
+        let bTm = new Date(b.createTime).getTime();
+        return bTm - aTm;
+      });
+      return arr;
+    },
   },
   data() {
     return {
@@ -63,9 +75,7 @@ export default {
     },
   },
   created() {},
-  mounted() {
-    console.log(this.userInfo);
-  },
+  mounted() {},
 };
 </script>
 <style lang="less" scoped>
