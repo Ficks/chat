@@ -17,7 +17,11 @@
         <mu-list textline="three-line">
           <!-- <mu-sub-header>今天</mu-sub-header> -->
           <template v-for="(item,index) in listArr">
-            <mu-list-item avatar :to="{path:'/chat',query:{tel:item.tel,groupId:item.groupId,nickName:item.nickName,headImg:item.headImg}}" button>
+            <mu-list-item
+              avatar
+              :to="{path:'/chat',query:{tel:item.tel,groupId:item.groupId,nickName:item.nickName,headImg:item.headImg}}"
+              button
+            >
               <mu-list-item-action>
                 <mu-avatar>
                   <img :src="userInfo.sysPath+item.headImg">
@@ -30,6 +34,9 @@
                   {{item.msg}}
                 </mu-list-item-sub-title>
               </mu-list-item-content>
+              <mu-list-item-action v-show="item.noReadTotal>0">
+                <mu-badge :content="item.noReadTotal.toString()" color="secondary"></mu-badge>
+              </mu-list-item-action>
             </mu-list-item>
             <mu-divider></mu-divider>
           </template>
@@ -39,12 +46,12 @@
   </div>
 </template>
 <script>
-import {mapGetters, mapMutations} from 'vuex';
-import common from '@/mixins/common';
+import { mapGetters, mapMutations } from "vuex";
+import common from "@/mixins/common";
 export default {
   mixins: [common],
   computed: {
-    ...mapGetters(['userInfo', 'globalMsg']),
+    ...mapGetters(["userInfo", "globalMsg"]),
     listArr() {
       let arr = [];
       for (let key in this.globalMsg) {
@@ -56,30 +63,30 @@ export default {
         return bTm - aTm;
       });
       return arr;
-    },
+    }
   },
   data() {
     return {
-      shift: 'movies',
+      shift: "movies",
       docked: false,
       openDrawer: false,
-      position: 'left',
-      defaultHeadImg: '@/assets/headImg.jpg',
+      position: "left",
+      defaultHeadImg: "@/assets/headImg.jpg"
     };
   },
   methods: {
-    ...mapMutations(['setOpenDrawer']),
+    ...mapMutations(["setOpenDrawer"]),
     outLogin() {
       // 退出登录
-      this.$router.push({path: '/login'});
-    },
+      this.$router.push({ path: "/login" });
+    }
   },
   created() {},
-  mounted() {},
+  mounted() {}
 };
 </script>
 <style lang="less" scoped>
-.mu-list{
+.mu-list {
   padding: 0;
 }
 .fixbom {
